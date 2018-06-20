@@ -256,14 +256,12 @@ public class MainRecyclerAdapter extends RecyclerView.Adapter<MainRecyclerAdapte
                 });
 
 
-
-                //TODO: get the price input working. This code was taken from https://stackoverflow.com/questions/17423483/how-to-limit-edittext-length-to-7-integers-and-2-decimal-places/21802109
                 final EditText salePrice = salePrompt.findViewById(R.id.new_price);
                 salePrice.setFilters(new InputFilter[] {new DecimalDigitsInputFilter(7,2)});
 
-                //TODO: make the API call
+                //TODO: make the API call to take the start timestamp, end timestamp, and new sale price
 
-                //TODO: update the data the recycler adapter stores
+                //TODO: make an API call to fetch all the item listings data, now that it's updated
 
             }
         });
@@ -294,9 +292,9 @@ public class MainRecyclerAdapter extends RecyclerView.Adapter<MainRecyclerAdapte
                 builder.setMessage("Are you sure?").setNegativeButton("Cancel", dialogClickListener)
                         .setPositiveButton("Yes", dialogClickListener).show();
 
-                //ToDo: make the API call to delete the item
+                //ToDo: make the API call to delete the item selected
 
-                //ToDo: update the data the recycler adapter stores
+                //ToDo: make an API call to fetch all the item listings data, now that it's updated
 
             }
         });
