@@ -1,0 +1,41 @@
+<resources>
+        <string name="app_name">CartPartners App v1</string>
+        <string name="close_button">X</string>
+        <string name="description_default">Description</string>
+        <string name="date_default">Date</string>
+        <string name="take_photo">Take Photo</string>
+        <string name="cancel">Cancel</string>
+        <string name="save_post">Save Post</string>
+
+        <string name="commentEmptyToast">Comment must be nonempty</string>
+        <string name="successfulUpload">Success in uploading photo</string>
+        <string name="failedUpload">Failure in uploading photo</string>
+        <string name="cancelPhoto">Cancelled taking photo!</string>
+
+        <string name="failToFindPhoto">Fail to find photo</string>
+        <string name="failToGetKey">Fail to get key</string>
+        <string name="permissionGranted">Permission Granted</string>
+
+        <string-array name="cuisine_array">
+            <item>Any</item>
+            <item>Chinese</item>
+            <item>Italian</item>
+            <item>American</item>
+            <item>Korean</item>
+            <item>Japanese</item>
+            <item>Mexican</item>
+        </string-array>
+
+
+        <string name="orderBy">Order Items By:</string>
+        <string name="viewAllYourRecipes">View All of Your Delicious Recipes</string>
+        <string name="salePrice">New Sale Price</string>
+        <string name="saleStart">Start Date</string>
+        <string name="saleEnd">End Date</string>
+
+        <string name="mainView">Item Listings</string>
+        <string name="metricsView">Sales Metrics</string>
+        <string name="settingsView">Settings</string>
+
+
+</resources>

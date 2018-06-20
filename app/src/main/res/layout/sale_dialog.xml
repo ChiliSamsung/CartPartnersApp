@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <EditText
+        android:id = "@+id/new_price"
+
+        android:inputType="numberDecimal"
+
+        android:textSize="30sp"
+
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:hint="@string/salePrice"
+        android:layout_below= "@+id/sale_start"
+        android:layout_centerHorizontal="true"
+        android:paddingTop="30dp"
+        />
+
+    <TextView
+        android:id="@+id/sale_start"
+
+        android:textSize="20sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+
+        android:layout_alignParentTop="true"
+        android:hint="@string/saleStart"
+        />
+
+    <TextView
+        android:id="@+id/sale_end"
+
+        android:textSize="20sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/sale_start"
+        android:hint="@string/saleEnd"
+        />
+
+
+
+
+
+</RelativeLayout>

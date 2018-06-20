@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+
+    >
+
+    <item
+        android:id="@+id/action_main"
+        android:title="@string/mainView"
+        app:showAsAction = "never"
+        />
+
+    <item
+        android:id="@+id/action_sales_metrics"
+        android:title="@string/metricsView"
+        app:showAsAction = "never"
+        />
+
+
+    <item
+        android:id="@+id/action_settings"
+        android:title="@string/settingsView"
+        app:showAsAction = "never"
+        />
+</menu>
