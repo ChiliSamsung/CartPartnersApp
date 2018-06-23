@@ -5,18 +5,10 @@
     android:layout_height="match_parent"
     tools:context="com.charles.cartpartners_v1.MainActivity">
 
-    <TextView
-        android:id="@+id/recipe_list_prompt"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/orderBy"
-        />
-
     <Spinner
         android:id="@+id/sort_by_spinner"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/recipe_list_prompt"
         />
 
     <android.support.v7.widget.RecyclerView

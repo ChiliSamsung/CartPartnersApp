@@ -65,6 +65,39 @@ public class MainActivity extends AppCompatActivity {
                     MY_PERMISSIONS_REQUEST);
         }
 
+
+        //setup sharedpreferences storage
+
+        //PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+        SharedPreferences sharedPref =
+                PreferenceManager.getDefaultSharedPreferences(this);
+
+
+        boolean userIsSignedIn = sharedPref.getBoolean("userSignedIn", false);
+        System.out.println("SIGNED IN BOOLEAN: " + userIsSignedIn);
+
+        if (userIsSignedIn) {
+            //TODO: go fetch the user's accountId so that will inform the pulling the data
+
+
+        } else {
+            //pull up the SignInActivity
+            Intent i = new Intent(this, SignInActivity.class);
+            startActivity(i);
+
+        }
+
+
+
+        Boolean switchPref = sharedPref.getBoolean
+                (SettingsView.example_switch_key, false);
+
+        Toast.makeText(this, "Switch is set to: " + switchPref.toString(), Toast.LENGTH_SHORT).show();
+
+        String marketPref = sharedPref.getString("sync_frequency", "-1");
+        Toast.makeText(this, marketPref, Toast.LENGTH_SHORT).show();
+
+
         //update the whole database
         update();
 
@@ -74,6 +107,8 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(layoutManager);
         chooseAll();
 
+
+        //make the spinner
         spinnerSetup();
     }
 
@@ -232,8 +267,8 @@ public class MainActivity extends AppCompatActivity {
 
 
                 //redirect me to the Scoreboard activity
-                //Intent i_2 = new Intent(this, CameraView.class);
-                //startActivity(i_2);
+                Intent i_2 = new Intent(this, SettingsActivity.class);
+                startActivity(i_2);
 
                 break;
 
