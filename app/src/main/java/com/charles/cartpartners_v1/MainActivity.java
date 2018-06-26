@@ -1,9 +1,15 @@
 package com.charles.cartpartners_v1;
 
 import android.Manifest;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -65,6 +71,9 @@ public class MainActivity extends AppCompatActivity {
                     MY_PERMISSIONS_REQUEST);
         }
 
+        //setup notifications channel
+        createNotificationChannel();
+
 
         //setup sharedpreferences storage
 
@@ -87,15 +96,54 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
-
-
+        /* This was for the switch in the SettingsView example that I did
         Boolean switchPref = sharedPref.getBoolean
                 (SettingsView.example_switch_key, false);
-
         Toast.makeText(this, "Switch is set to: " + switchPref.toString(), Toast.LENGTH_SHORT).show();
+        */
 
-        String marketPref = sharedPref.getString("sync_frequency", "-1");
+        String marketPref = sharedPref.getString("sync_frequency", "30");
         Toast.makeText(this, marketPref, Toast.LENGTH_SHORT).show();
+
+
+
+        //setup the jobuilders and jobscheduler. But only if it hasn't been setup before
+        SharedPreferences.Editor writer = sharedPref.edit();
+        String backgroundServiceSetupID = "backgroundSetup";
+        boolean backgroundServiceSetup = sharedPref.getBoolean(backgroundServiceSetupID, false);
+        if (backgroundServiceSetup) {
+            //can still schedule it, since it would need to update the new job duration value
+            ComponentName backgroundService = new ComponentName(this, BackgroundService.class);
+            int jobID = 1234;
+            JobInfo.Builder jobBuilder = new JobInfo.Builder(jobID, backgroundService);
+            jobBuilder.setPersisted(true);
+            //jobBuilder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_NOT_ROAMING);
+            long intervalDuration = Long.parseLong(marketPref);
+            jobBuilder.setPeriodic(intervalDuration * 60000);
+
+            //schedule the job
+            JobScheduler scheduler = this.getSystemService(JobScheduler.class);
+            scheduler.schedule(jobBuilder.build());
+
+
+        } else {
+            writer.putBoolean(backgroundServiceSetupID, true);
+            writer.apply();
+
+            //setup the job
+            ComponentName backgroundService = new ComponentName(this, BackgroundService.class);
+            int jobID = 1234;
+            JobInfo.Builder jobBuilder = new JobInfo.Builder(jobID, backgroundService);
+            jobBuilder.setPersisted(true);
+            //jobBuilder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_NOT_ROAMING);
+            long intervalDuration = Long.parseLong(marketPref);
+            jobBuilder.setPeriodic(intervalDuration * 60000);
+
+            //schedule the job
+            JobScheduler scheduler = this.getSystemService(JobScheduler.class);
+            scheduler.schedule(jobBuilder.build());
+
+        }
 
 
         //update the whole database
@@ -241,6 +289,26 @@ public class MainActivity extends AppCompatActivity {
         MainRecyclerAdapter recyclerAdapter = new MainRecyclerAdapter(names, dollars, cuisines, descriptions, imageNames);
         recyclerView.setAdapter(recyclerAdapter);
     }
+
+    //required for API 26 and higher to post notifications
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "Test Channel";
+            String description = "Required to Post Notifications";
+            String CHANNEL_ID = "123";
+
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
+
 
 
     //make the actionbar based on the menu_items menu XML

@@ -3,7 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.charles.cartpartners_v1.MainActivity">
+    tools:context="com.charles.cartpartners_v1.MainActivity"
+
+    >
 
     <Spinner
         android:id="@+id/sort_by_spinner"

@@ -1,8 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="wrap_content"
-    android:padding="4dp"
+    android:padding="10dp"
+    android:background="@color/colorPrimaryDark"
     >
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="66dp"
+        android:background="@color/white"
+        />
 
     <ImageView
         android:id="@+id/item_picture"
@@ -11,7 +19,7 @@
         android:layout_height="150dp"
         android:scaleType="fitXY"
         android:adjustViewBounds="true"
-        android:background="@color/itemBackground"
+        android:background="@color/colorAccent"
         android:padding = "5dp"
         android:layout_alignParentEnd="true"
         />
@@ -28,6 +36,7 @@
 
         android:layout_alignParentStart="true"
 
+
         />
 
     <TextView
@@ -41,6 +50,7 @@
         android:paddingEnd="150dp"
         android:layout_alignParentStart="true"
 
+
         />
 
     <TextView
@@ -53,28 +63,42 @@
 
         android:paddingStart="5dp"
         android:paddingEnd="150dp"
+        android:paddingBottom="10dp"
+
         android:layout_alignParentStart="true"
+
 
         />
 
     <ImageButton
         android:id = "@+id/delete_button"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:scaleType="fitXY"
         android:src = "@drawable/delete"
         android:layout_below="@+id/recipe_short_description"
+        android:background="@color/colorAccent"
+
+        />
+
+    <TextView
+        android:id = "@+id/spacer1"
+        android:layout_width="10dp"
+        android:layout_height="40dp"
+        android:layout_below="@+id/recipe_short_description"
+        android:layout_toEndOf="@+id/delete_button"
 
         />
 
     <ImageButton
         android:id = "@+id/sale_button"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:scaleType="fitXY"
         android:src = "@drawable/sale"
         android:layout_below="@+id/recipe_short_description"
-        android:layout_toEndOf="@+id/delete_button"
+        android:layout_toEndOf="@+id/spacer1"
+        android:background="@color/colorAccent"
 
         />
 

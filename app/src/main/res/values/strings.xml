@@ -127,6 +127,8 @@
     <!-- Login Page -->
     <string name="login">Login</string>
     <string name="cartpartners">CartPartners</string>
+    <string name="password_hint">Password</string>
+    <string name="email_hint">Email</string>
     
 
 </resources>

@@ -1,6 +1,7 @@
 package com.charles.cartpartners_v1;
 
 import android.annotation.TargetApi;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -8,12 +9,15 @@ import android.content.res.Configuration;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.opengl.Visibility;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.support.v4.app.NavUtils;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.ActionBar;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
@@ -24,6 +28,10 @@ import android.view.MenuItem;
 import com.charles.cookingapp.R;
 
 import java.util.List;
+
+import static android.app.Notification.EXTRA_NOTIFICATION_ID;
+import static android.app.Notification.GROUP_ALERT_CHILDREN;
+import static android.app.Notification.VISIBILITY_PRIVATE;
 
 /**
  * A {@link PreferenceActivity} that presents a set of application settings. On
@@ -213,8 +221,42 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.pref_notification);
-            setHasOptionsMenu(true);
 
+            Preference myPref = findPreference("notification_button");
+            myPref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                public boolean onPreferenceClick(Preference preference) {
+
+                    //experiment with notifications
+                    // Create an explicit intent for an Activity in your app
+                    String CHANNEL_ID = "123";
+                    Intent intent = new Intent(preference.getContext(), MainActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    PendingIntent pendingIntent = PendingIntent.getActivity(preference.getContext(), 0, intent, 0);
+
+                    NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(preference.getContext(), CHANNEL_ID)
+                            .setSmallIcon(R.drawable.sale)
+                            .setContentTitle("You Have Made a Sale!")
+                            .setContentText("$5.99")
+                            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                            .setVisibility(VISIBILITY_PRIVATE)
+                            // Set the intent that will fire when the user taps the notification
+                            .setContentIntent(pendingIntent)
+                            .setAutoCancel(true); //remove notification when user taps it
+
+                    //make the notification. It needs a unique ID too. That way if you need to update it you use that ID and call .notify()
+                    int notificationId = (int) (1000 * Math.random());
+                    NotificationManagerCompat notificationManager = NotificationManagerCompat.from(preference.getContext());
+                    // notificationId is a unique int for each notification that you must define
+                    notificationManager.notify(notificationId, mBuilder.build());
+
+                    //NOTES: after there are 4 of these, it automatically groups them together by default
+
+                    return true;
+                }
+            });
+
+
+            setHasOptionsMenu(true);
             // Bind the summaries of EditText/List/Dialog/Ringtone preferences
             // to their values. When their values change, their summaries are
             // updated to reflect the new value, per the Android Design
@@ -306,6 +348,20 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             }
             return super.onOptionsItemSelected(item);
         }
+    }
+
+
+    //for the settingsActivity view, its back button will return it to the mainActivity
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home:
+                //go up the parent tree defined in AndroidManifest
+                super.onBackPressed();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
 

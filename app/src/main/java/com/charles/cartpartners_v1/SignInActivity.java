@@ -52,7 +52,6 @@ public class SignInActivity extends AppCompatActivity {
                     startActivity(i);
 
 
-
                 } else {
                     //do nothing
                 }

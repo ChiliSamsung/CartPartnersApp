@@ -24,4 +24,9 @@
         android:key="notifications_new_message_vibrate"
         android:title="@string/pref_title_vibrate" />
 
+    <Preference
+        android:title="Make Notification"
+        android:key="notification_button"
+        />
+
 </PreferenceScreen>
