@@ -10,7 +10,6 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputFilter;
-import android.text.Layout;
 import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -29,8 +28,6 @@ import com.charles.cookingapp.R;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -306,7 +303,7 @@ public class MainRecyclerAdapter extends RecyclerView.Adapter<MainRecyclerAdapte
     //code from https://stackoverflow.com/questions/17423483/how-to-limit-edittext-length-to-7-integers-and-2-decimal-places/21802109
     public class DecimalDigitsInputFilter implements InputFilter {
         Pattern mPattern;
-        public DecimalDigitsInputFilter(int digitsBeforeZero,int digitsAfterZero) {
+        DecimalDigitsInputFilter(int digitsBeforeZero,int digitsAfterZero) {
             mPattern=Pattern.compile("[0-9]{0," + (digitsBeforeZero-1) + "}+((\\.[0-9]{0," + (digitsAfterZero-1) + "})?)|(\\.)?");
         }
 
@@ -353,7 +350,7 @@ public class MainRecyclerAdapter extends RecyclerView.Adapter<MainRecyclerAdapte
         ImageButton sale_button;
 
 
-        public ViewHolder(View v) {
+        ViewHolder(View v) {
             super(v);
             ButterKnife.bind(this, v);
 

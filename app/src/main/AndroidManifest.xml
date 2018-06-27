@@ -37,7 +37,6 @@
         </activity>
         <activity android:name="com.charles.cartpartners_v1.RecipeActivity"></activity>
         <activity android:name="com.charles.cartpartners_v1.MetricsView"></activity>
-        <activity android:name="com.charles.cartpartners_v1.SettingsView"></activity>
         <activity android:name="com.charles.cartpartners_v1.SignInActivity"></activity>
 
         <activity

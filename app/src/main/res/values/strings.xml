@@ -26,6 +26,7 @@
         <item>Mexican</item>
     </string-array>
 
+    <string name="ItemImageView">Picture of Item</string>
 
     <string name="orderBy">Order Items By:</string>
     <string name="viewAllYourRecipes">View All of Your Delicious Recipes</string>

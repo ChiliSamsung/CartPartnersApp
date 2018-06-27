@@ -22,6 +22,7 @@
         android:background="@color/colorAccent"
         android:padding = "5dp"
         android:layout_alignParentEnd="true"
+        android:contentDescription="@string/ItemImageView"
         />
 
     <TextView
@@ -78,6 +79,7 @@
         android:src = "@drawable/delete"
         android:layout_below="@+id/recipe_short_description"
         android:background="@color/colorAccent"
+        android:contentDescription="@string/ItemImageView"
 
         />
 
@@ -99,6 +101,7 @@
         android:layout_below="@+id/recipe_short_description"
         android:layout_toEndOf="@+id/spacer1"
         android:background="@color/colorAccent"
+        android:contentDescription="@string/ItemImageView"
 
         />
 
@@ -114,6 +117,7 @@
 
         android:paddingTop="10dp"
         android:paddingStart="2dp"
+        android:paddingEnd="2dp"
 
         />
 

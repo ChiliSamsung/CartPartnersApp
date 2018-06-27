@@ -316,6 +316,32 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.pref_account);
 
+
+            /*
+            Preference flipSwitch = findPreference("remember_login");
+            flipSwitch.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object o) {
+                    preference.
+
+                    SharedPreferences sharedPref =
+                            PreferenceManager.getDefaultSharedPreferences(preference.getContext());
+                    boolean rememberLogin = sharedPref.getBoolean("rememberLogin", false);
+                    SharedPreferences.Editor editor = sharedPref.edit();
+                    //flip to the opposite
+                    if (rememberLogin) {
+                        editor.putBoolean("rememberLogin", false);
+                    } else {
+                        editor.putBoolean("rememberLogin", true);
+                    }
+                    editor.apply();
+
+                    return false;
+                }
+            });
+            */
+
+
             Preference myPref = findPreference("sign_out_button");
             myPref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 public boolean onPreferenceClick(Preference preference) {

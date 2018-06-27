@@ -76,16 +76,16 @@ public class MainActivity extends AppCompatActivity {
 
 
         //setup sharedpreferences storage
-
-        //PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         SharedPreferences sharedPref =
                 PreferenceManager.getDefaultSharedPreferences(this);
-
 
         boolean userIsSignedIn = sharedPref.getBoolean("userSignedIn", false);
         System.out.println("SIGNED IN BOOLEAN: " + userIsSignedIn);
 
-        if (userIsSignedIn) {
+        boolean rememberLogin = sharedPref.getBoolean("remember_login", false);
+
+        //TODO: get the "remember login" functionality to work
+        if (userIsSignedIn || rememberLogin) {
             //TODO: go fetch the user's accountId so that will inform the pulling the data
 
 
@@ -96,18 +96,12 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
-        /* This was for the switch in the SettingsView example that I did
-        Boolean switchPref = sharedPref.getBoolean
-                (SettingsView.example_switch_key, false);
-        Toast.makeText(this, "Switch is set to: " + switchPref.toString(), Toast.LENGTH_SHORT).show();
-        */
 
         String marketPref = sharedPref.getString("sync_frequency", "30");
-        Toast.makeText(this, marketPref, Toast.LENGTH_SHORT).show();
-
-
+        Toast.makeText(this, "Sync Freq: " + marketPref, Toast.LENGTH_SHORT).show();
 
         //setup the jobuilders and jobscheduler. But only if it hasn't been setup before
+        //NOTE: maybe could just have it run each time you open the app. Since that's not bad
         SharedPreferences.Editor writer = sharedPref.edit();
         String backgroundServiceSetupID = "backgroundSetup";
         boolean backgroundServiceSetup = sharedPref.getBoolean(backgroundServiceSetupID, false);
@@ -149,8 +143,9 @@ public class MainActivity extends AppCompatActivity {
         //update the whole database
         update();
 
+
         //RECYCLERVIEW SETUP
-        recyclerView = (RecyclerView) findViewById(R.id.recipe_listRecyclerView);
+        recyclerView = findViewById(R.id.recipe_listRecyclerView);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         chooseAll();
@@ -160,6 +155,8 @@ public class MainActivity extends AppCompatActivity {
         spinnerSetup();
     }
 
+
+    //TODO: this needs to actually pull the data
     //update all the data pulled from the database
     public void update() {
         dbHelper = new DbHelper(this);
@@ -183,10 +180,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
+    //TODO: get the spinner to allow "sorting" of the elements
     //setup the spinner
     public void spinnerSetup() {
         //SPINNER SETUP
-        Spinner spinner = (Spinner) findViewById(R.id.sort_by_spinner);
+        Spinner spinner = findViewById(R.id.sort_by_spinner);
         // Create an ArrayAdapter using the string array and a default spinner layout
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.cuisine_array, android.R.layout.simple_spinner_item);
@@ -210,7 +209,7 @@ public class MainActivity extends AppCompatActivity {
 
 
                     //NOT SURE IF THeSE 3 LINES IS NECESSARY, maybe delete?
-                    recyclerView = (RecyclerView) findViewById(R.id.recipe_listRecyclerView);
+                    recyclerView = findViewById(R.id.recipe_listRecyclerView);
                     layoutManager = new LinearLayoutManager(arg1.getContext());
                     recyclerView.setLayoutManager(layoutManager);
 
@@ -250,11 +249,11 @@ public class MainActivity extends AppCompatActivity {
     public void chooseCuisine(specifications s) {
         List<RecipeContract.Recipe> recipes = dbHelper.getRecipes(s);
 
-        ArrayList<String> names = new ArrayList<String>();
-        ArrayList<String> dollars = new ArrayList<String>();
-        ArrayList<String> cuisines = new ArrayList<String>();
-        ArrayList<String> descriptions = new ArrayList<String>();
-        ArrayList<String> imageNames = new ArrayList<String>();
+        ArrayList<String> names = new ArrayList<>();
+        ArrayList<String> dollars = new ArrayList<>();
+        ArrayList<String> cuisines = new ArrayList<>();
+        ArrayList<String> descriptions = new ArrayList<>();
+        ArrayList<String> imageNames = new ArrayList<>();
 
         for(RecipeContract.Recipe r : recipes) {
             names.add(r.name);
@@ -272,11 +271,11 @@ public class MainActivity extends AppCompatActivity {
     public void chooseAll() {
         List<RecipeContract.Recipe> recipes = dbHelper.getAllRecipes();
 
-        ArrayList<String> names = new ArrayList<String>();
-        ArrayList<String> dollars = new ArrayList<String>();
-        ArrayList<String> cuisines = new ArrayList<String>();
-        ArrayList<String> descriptions = new ArrayList<String>();
-        ArrayList<String> imageNames = new ArrayList<String>();
+        ArrayList<String> names = new ArrayList<>();
+        ArrayList<String> dollars = new ArrayList<>();
+        ArrayList<String> cuisines = new ArrayList<>();
+        ArrayList<String> descriptions = new ArrayList<>();
+        ArrayList<String> imageNames = new ArrayList<>();
 
         for(RecipeContract.Recipe r : recipes) {
             names.add(r.name);
@@ -325,35 +324,21 @@ public class MainActivity extends AppCompatActivity {
             case R.id.action_sales_metrics:
                 Toast.makeText(this, "Item Listings", Toast.LENGTH_SHORT).show();
 
-                //redirect me to metrics activity
                 Intent i_1 = new Intent(this, MetricsView.class);
                 startActivity(i_1);
-
                 break;
             case R.id.action_settings:
                 Toast.makeText(this, "Sales Metrics", Toast.LENGTH_SHORT).show();
 
-
-                //redirect me to the Scoreboard activity
                 Intent i_2 = new Intent(this, SettingsActivity.class);
                 startActivity(i_2);
-
                 break;
 
-            // ADDED:clear the scoreboard if this was pressed
             case R.id.action_main:
                 Toast.makeText(this, "Settings", Toast.LENGTH_LONG).show();
 
-//                SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
-//                SharedPreferences.Editor editor = settings.edit();
-//
-//                editor.clear();
-//                editor.apply();
-
-                //redirect me to the Scoreboard activity, thereby showing the changes
                 Intent i_3 = new Intent(this, MainActivity.class);
                 startActivity(i_3);
-
                 break;
 
             default:
