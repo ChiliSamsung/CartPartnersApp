@@ -6,8 +6,14 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import java.sql.Date;
+import java.sql.Time;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 import com.charles.cartpartners_v1.RecipeContract.RecipeEntry;
 import com.charles.cartpartners_v1.MainActivity.specifications;
@@ -17,14 +23,16 @@ public class DbHelper extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
     private static final String DATABASE_NAME = "User.db";
     private static final String SQL_CREATE_ENTRIES =
-            "CREATE TABLE " + RecipeEntry.TABLE_NAME + " (" +
-                    RecipeEntry.COLUMN_NAME + " TEXT," +
-                    RecipeEntry.COLUMN_DESCRIPTION + " TEXT," +
-                    RecipeEntry.COLUMN_DOLLARS + " TEXT," +
-                    RecipeEntry.COLUMN_CUISINE + " TEXT," +
-                    RecipeEntry.COLUMN_PICTURE + " TEXT" + ")";
+            "CREATE TABLE " + ItemContract.ItemEntry.TABLE_NAME + " (" +
+                    ItemContract.ItemEntry.COLUMN_ID + " TEXT," +
+                    ItemContract.ItemEntry.COLUMN_NAME + " TEXT," +
+                    ItemContract.ItemEntry.COLUMN_TYPE + " TEXT," +
+                    ItemContract.ItemEntry.COLUMN_PRICE + " TEXT," +
+                    ItemContract.ItemEntry.COLUMN_DATE + " TEXT," +
+                    ItemContract.ItemEntry.COLUMN_DESCRIPTION + " TEXT," +
+                    ItemContract.ItemEntry.COLUMN_QUANTITY + " TEXT" + ")";
     private static final String SQL_DROP_TABLE =
-            "DROP TABLE IF EXISTS " + RecipeEntry.TABLE_NAME;
+            "DROP TABLE IF EXISTS " + ItemContract.ItemEntry.TABLE_NAME;
 
 
     DbHelper(Context context) {
@@ -58,7 +66,7 @@ public class DbHelper extends SQLiteOpenHelper {
         };
 
         //argument 1: which table to look at
-        //argument 2: what which columns to fetch
+        //argument 2: what which columns to select
         //argument 3: the where-clause, determines how to filter
         //argument 7: how to sort the elements in the Cursor
         String sortOrder = RecipeEntry.COLUMN_NAME + " DESC";
@@ -90,6 +98,86 @@ public class DbHelper extends SQLiteOpenHelper {
         cursor.close();
         return recipes;
     }
+
+
+    //fetches all sales data going "x" days back
+    List<Item> fetchSalesData(int x) {
+        //reads in all the current database first
+        SQLiteDatabase db = getReadableDatabase();
+
+        //this decides which columns to fetch. Must be a string[] format
+        String[] projection = {
+                ItemContract.ItemEntry.COLUMN_ID,
+                ItemContract.ItemEntry.COLUMN_NAME,
+                ItemContract.ItemEntry.COLUMN_TYPE,
+                ItemContract.ItemEntry.COLUMN_PRICE,
+                ItemContract.ItemEntry.COLUMN_QUANTITY,
+                ItemContract.ItemEntry.COLUMN_DATE
+        };
+
+        //get the start date of the selection
+
+        /*
+        SimpleDateFormat mdFormat = new SimpleDateFormat("yyyy.MM.dd", Locale.US);
+        String startDateString = mdFormat.format(helperDate);
+        double startDateDouble = Double.parseDouble(startDateString);
+        */
+
+        //argument 1: which table to look at
+        //argument 2: what which columns to select
+        //argument 3: the where-clause, determines how to filter
+        //argument 7: how to sort the elements in the Cursor
+        String sortOrder = ItemContract.ItemEntry.COLUMN_DATE + " DESC";
+        Cursor cursor = db.query(
+                ItemContract.ItemEntry.TABLE_NAME,
+                projection,
+                ItemContract.ItemEntry.COLUMN_DATE + " BETWEEN " + "'2018-01-01' AND '2018-08-01'",
+                null,
+                null,
+                null,
+                sortOrder
+        );
+
+
+        List<Item> sales = new ArrayList<>();
+
+        //the Cursor is like an iterator and you can go down all the results of the query one at a time
+        //the cursor has a column index so you use that to do some of it
+        //also note the COLUMN names are what you use to access the data stored there. So it's the column index and the column name that do it
+        while (cursor.moveToNext()) {
+            String id = cursor.getString(cursor.getColumnIndex(ItemContract.ItemEntry.COLUMN_ID));
+            String name = cursor.getString(cursor.getColumnIndex(ItemContract.ItemEntry.COLUMN_NAME));
+            double price = cursor.getDouble(cursor.getColumnIndex(ItemContract.ItemEntry.COLUMN_PRICE));
+            String type = cursor.getString(cursor.getColumnIndex(ItemContract.ItemEntry.COLUMN_TYPE));
+            int quantity = cursor.getInt(cursor.getColumnIndex(ItemContract.ItemEntry.COLUMN_QUANTITY));
+            String date = cursor.getString(cursor.getColumnIndex(ItemContract.ItemEntry.COLUMN_DATE));
+
+            sales.add(new Item(id, name, type, price, quantity, date));
+        }
+
+        cursor.close();
+
+
+        //IT WORKS!
+        daysBackHelper(5, "1991-02-01");
+
+        return sales;
+    }
+
+    String daysBackHelper(int x, String date) {
+        SimpleDateFormat mdFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+        Calendar cal = Calendar.getInstance();
+        try {
+            cal.setTime(mdFormat.parse(date));
+        } catch(java.text.ParseException e) {
+            //do nothing
+        }
+        cal.add(Calendar.DAY_OF_MONTH, -x);
+
+        System.out.println(mdFormat.format(cal.getTime()));
+        return mdFormat.format(cal.getTime());
+    }
+
 
 
     //fetches particular recipes, given a specification ENUM
@@ -166,11 +254,24 @@ public class DbHelper extends SQLiteOpenHelper {
         db.insert(RecipeEntry.TABLE_NAME, null, contentValues);
     }
 
+    public void insertSale(String id, String name, String price, String type, String quantity, String date) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(ItemContract.ItemEntry.COLUMN_ID, id);
+        contentValues.put(ItemContract.ItemEntry.COLUMN_NAME, name);
+        contentValues.put(ItemContract.ItemEntry.COLUMN_TYPE, type);
+
+        contentValues.put(ItemContract.ItemEntry.COLUMN_PRICE, Double.parseDouble(price));
+        contentValues.put(ItemContract.ItemEntry.COLUMN_DATE, date);
+        contentValues.put(ItemContract.ItemEntry.COLUMN_QUANTITY, Integer.parseInt(quantity));
+        db.insert(ItemContract.ItemEntry.TABLE_NAME, null, contentValues);
+    }
+
 
     //see for delete() when the "Where" argument is empty then it deletes all rows since you're now limiting its "search"
     public void clearDb() {
         SQLiteDatabase db = getWritableDatabase();
-        db.delete(RecipeEntry.TABLE_NAME, null, null);
+        db.delete(ItemContract.ItemEntry.TABLE_NAME, null, null);
     }
 
 

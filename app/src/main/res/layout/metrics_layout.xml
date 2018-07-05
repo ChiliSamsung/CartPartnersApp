@@ -5,6 +5,58 @@
     android:layout_height="match_parent"
     tools:context="com.charles.cartpartners_v1.MetricsView">
 
+    <GridLayout
+        android:id="@+id/grid_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        >
+        <Button
+            android:id="@+id/TimelineButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Timeline"
+            />
+
+        <Button
+            android:id="@+id/GraphButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Graph"
+            />
+
+    </GridLayout>
+
+    <GridLayout
+        android:id="@+id/fragView"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_below="@+id/grid_layout"
+        >
+
+    </GridLayout>
+
+    <SeekBar
+        android:id="@+id/timelineDays"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:thumb="@drawable/seek_thumb"
+        android:progressDrawable="@drawable/seek_style"
+        android:layout_below="@+id/fragView"
+        android:progressTint="@android:color/transparent"
+        android:splitTrack="false"
+        />
+
+    <TextView
+        android:id="@+id/numDays"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/timelineDays"
+        android:layout_centerHorizontal="true"
+        />
+
+
+
 
 
 

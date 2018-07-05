@@ -6,7 +6,7 @@
 
     <item
         android:id="@+id/action_main"
-        android:title="@string/mainView"
+        android:title="@string/itemInventoryView"
         app:showAsAction = "never"
         />
 

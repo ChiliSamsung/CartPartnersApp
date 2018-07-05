@@ -28,15 +28,15 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <activity android:name="com.charles.cartpartners_v1.MainActivity">
+        <activity android:name="com.charles.cartpartners_v1.MainActivity"></activity>
+        <activity android:name="com.charles.cartpartners_v1.RecipeActivity"></activity>
+        <activity android:name="com.charles.cartpartners_v1.MetricsView">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
+                <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.charles.cartpartners_v1.RecipeActivity"></activity>
-        <activity android:name="com.charles.cartpartners_v1.MetricsView"></activity>
+
         <activity android:name="com.charles.cartpartners_v1.SignInActivity"></activity>
 
         <activity

@@ -226,8 +226,9 @@ public class MainRecyclerAdapter extends RecyclerView.Adapter<MainRecyclerAdapte
                                         public void onTimeSet(TimePicker timePicker, int i, int i1) {
                                             endDate[3] = i;
                                             endDate[4] = i1;
-                                            Timestamp endTimeStamp = new Timestamp(endDate[2] - 1900, endDate[0], endDate[1], endDate[3], endDate[4], 0, 0);
 
+                                            //the date array goes month, day, year, then hour, minute (hour is in 24-hour time)
+                                            Timestamp endTimeStamp = new Timestamp(endDate[2] - 1900, endDate[0], endDate[1], endDate[3], endDate[4], 0, 0);
                                             Timestamp startTimeStamp = new Timestamp(startDate[2] - 1900, startDate[0], startDate[1], startDate[3], startDate[4], 0, 0);
                                             //do not let the user input a time range that is before current time
                                             if (endTimeStamp.before(startTimeStamp)) {

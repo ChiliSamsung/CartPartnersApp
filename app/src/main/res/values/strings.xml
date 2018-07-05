@@ -34,14 +34,14 @@
     <string name="saleStart">Start Date</string>
     <string name="saleEnd">End Date</string>
 
-    <string name="mainView">Item Listings</string>
+    <string name="itemInventoryView">Item Inventory</string>
     <string name="metricsView">Sales Metrics</string>
     <string name="settingsView">Settings</string>
 
     <string name="switchTitle">Switch Title</string>
     <string name="switchDescription">Switch Description</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
+    <!-- Settings Activity -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_settings">Settings</string>
 

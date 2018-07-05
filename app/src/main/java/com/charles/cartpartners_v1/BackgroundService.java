@@ -22,7 +22,10 @@ public class BackgroundService extends JobService {
         System.out.println("JOB STARTED");
         System.out.println("JOB STARTED");
         System.out.println("JOB STARTED");
-        return true;
+
+
+        //returning true means it holds in wakelock. We want it to stop and then execute later in 15 mins
+        return false;
     }
 
     @Override
@@ -31,6 +34,8 @@ public class BackgroundService extends JobService {
         Toast.makeText(this.getApplicationContext(), "job ended", Toast.LENGTH_SHORT).show();
 
 
+
+        //returning true means to tell JobManager you'd like to reschedule the app based on the retry criteria provided at creation-time
         return true;
     }
 

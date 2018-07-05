@@ -31,8 +31,12 @@ import com.charles.cookingapp.R;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -141,14 +145,15 @@ public class MainActivity extends AppCompatActivity {
 
 
         //update the whole database
-        update();
+        updateOffline();
+
 
 
         //RECYCLERVIEW SETUP
         recyclerView = findViewById(R.id.recipe_listRecyclerView);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-        chooseAll();
+        //chooseAllRecipes();
 
 
         //make the spinner
@@ -156,12 +161,21 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    //TODO: this needs to actually pull the data
-    //update all the data pulled from the database
-    public void update() {
+    //TODO: need a method to pull in data from online
+
+
+
+
+
+
+
+    //pull data from offline database (.txt file)
+    public void updateOffline() {
         dbHelper = new DbHelper(this);
         dbHelper.clearDb();
 
+        //reading in the recipe data stuff
+        /*
         BufferedReader br = new BufferedReader( new InputStreamReader(getResources().openRawResource(R.raw.recipedata)));
         try{
             //right now there are 9 recipes in the data txt file
@@ -173,6 +187,32 @@ public class MainActivity extends AppCompatActivity {
                 String imageName = br.readLine();
                 br.readLine(); //skip an extra line down
                 dbHelper.insertRecipe(name, description, dollar, cuisine, imageName);
+            }
+
+        } catch (IOException e) {
+            //do stuff
+        }
+        */
+
+        //reading in the sales data stuff
+        BufferedReader br = new BufferedReader( new InputStreamReader(getResources().openRawResource(R.raw.fakedata)));
+        try{
+
+            while(true) {
+
+                String itemId = br.readLine();
+                String itemName = br.readLine();
+                String itemPrice = br.readLine();
+                String itemType = br.readLine();
+                String itemQuantity = br.readLine();
+                String date = br.readLine();
+
+                br.readLine(); //skip an extra line down
+                if(itemId == null || itemName == null || itemPrice == null) {
+                    break; //EOF
+                }
+
+                dbHelper.insertSale(itemId, itemName, itemPrice, itemType, itemQuantity, date);
             }
 
         } catch (IOException e) {
@@ -202,7 +242,7 @@ public class MainActivity extends AppCompatActivity {
                                        int pos, long id) {
                 if (pos == 0) {
                     Toast.makeText(arg1.getContext(), "Any Selected", Toast.LENGTH_SHORT).show();
-                    chooseAll();
+//                    chooseAllRecipes();
 
                 } else if (pos == 1) {
                     Toast.makeText(arg1.getContext(), "Chinese Selected", Toast.LENGTH_SHORT).show();
@@ -268,7 +308,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //sets the RecyclerView to display all the recipes that there are
-    public void chooseAll() {
+    public void chooseAllRecipes() {
         List<RecipeContract.Recipe> recipes = dbHelper.getAllRecipes();
 
         ArrayList<String> names = new ArrayList<>();
@@ -288,6 +328,7 @@ public class MainActivity extends AppCompatActivity {
         MainRecyclerAdapter recyclerAdapter = new MainRecyclerAdapter(names, dollars, cuisines, descriptions, imageNames);
         recyclerView.setAdapter(recyclerAdapter);
     }
+
 
     //required for API 26 and higher to post notifications
     private void createNotificationChannel() {
@@ -322,21 +363,15 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_sales_metrics:
-                Toast.makeText(this, "Item Listings", Toast.LENGTH_SHORT).show();
-
                 Intent i_1 = new Intent(this, MetricsView.class);
                 startActivity(i_1);
                 break;
             case R.id.action_settings:
-                Toast.makeText(this, "Sales Metrics", Toast.LENGTH_SHORT).show();
-
                 Intent i_2 = new Intent(this, SettingsActivity.class);
                 startActivity(i_2);
                 break;
 
             case R.id.action_main:
-                Toast.makeText(this, "Settings", Toast.LENGTH_LONG).show();
-
                 Intent i_3 = new Intent(this, MainActivity.class);
                 startActivity(i_3);
                 break;
