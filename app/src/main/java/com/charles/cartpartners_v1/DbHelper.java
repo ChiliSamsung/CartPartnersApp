@@ -5,6 +5,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import java.sql.Date;
 import java.sql.Time;
@@ -101,7 +103,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
 
     //fetches all sales data going "x" days back
-    List<Item> fetchSalesData(int x) {
+    ArrayList<Parcelable> fetchSalesData(int x) {
         //reads in all the current database first
         SQLiteDatabase db = getReadableDatabase();
 
@@ -117,11 +119,10 @@ public class DbHelper extends SQLiteOpenHelper {
 
         //get the start date of the selection
 
-        /*
-        SimpleDateFormat mdFormat = new SimpleDateFormat("yyyy.MM.dd", Locale.US);
-        String startDateString = mdFormat.format(helperDate);
-        double startDateDouble = Double.parseDouble(startDateString);
-        */
+
+        SimpleDateFormat mdFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+        String startDateString = "'" + mdFormat.format(Calendar.getInstance().getTime()) + "'";
+
 
         //argument 1: which table to look at
         //argument 2: what which columns to select
@@ -131,7 +132,7 @@ public class DbHelper extends SQLiteOpenHelper {
         Cursor cursor = db.query(
                 ItemContract.ItemEntry.TABLE_NAME,
                 projection,
-                ItemContract.ItemEntry.COLUMN_DATE + " BETWEEN " + "'2018-01-01' AND '2018-08-01'",
+                ItemContract.ItemEntry.COLUMN_DATE + " BETWEEN " + daysBackHelper(x, startDateString) + " AND " + startDateString,
                 null,
                 null,
                 null,
@@ -139,7 +140,7 @@ public class DbHelper extends SQLiteOpenHelper {
         );
 
 
-        List<Item> sales = new ArrayList<>();
+        ArrayList<Parcelable> sales = new ArrayList<>();
 
         //the Cursor is like an iterator and you can go down all the results of the query one at a time
         //the cursor has a column index so you use that to do some of it
@@ -157,10 +158,6 @@ public class DbHelper extends SQLiteOpenHelper {
 
         cursor.close();
 
-
-        //IT WORKS!
-        daysBackHelper(5, "1991-02-01");
-
         return sales;
     }
 
@@ -174,8 +171,7 @@ public class DbHelper extends SQLiteOpenHelper {
         }
         cal.add(Calendar.DAY_OF_MONTH, -x);
 
-        System.out.println(mdFormat.format(cal.getTime()));
-        return mdFormat.format(cal.getTime());
+        return "'" + mdFormat.format(cal.getTime()) + "'";
     }
 
 

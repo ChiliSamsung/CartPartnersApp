@@ -130,6 +130,11 @@
     <string name="cartpartners">CartPartners</string>
     <string name="password_hint">Password</string>
     <string name="email_hint">Email</string>
+
+    <!-- Metrics Stuff -->
+    <string name="timeline_title">Timeline</string>
+    <string name="line_graph_title">Line Graph</string>
+    <string name="pie_graph_title">Pie Graph</string>
     
 
 </resources>

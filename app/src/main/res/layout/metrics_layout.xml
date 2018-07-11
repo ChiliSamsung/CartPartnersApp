@@ -13,16 +13,22 @@
         >
         <Button
             android:id="@+id/TimelineButton"
-            android:layout_width="wrap_content"
+            android:layout_width="110dp"
             android:layout_height="wrap_content"
-            android:text="Timeline"
+            android:text="@string/timeline_title"
             />
 
         <Button
             android:id="@+id/GraphButton"
-            android:layout_width="wrap_content"
+            android:layout_width="110dp"
             android:layout_height="wrap_content"
-            android:text="Graph"
+            android:text="@string/line_graph_title"
+            />
+        <Button
+            android:id="@+id/PieButton"
+            android:layout_width="110dp"
+            android:layout_height="wrap_content"
+            android:text="@string/pie_graph_title"
             />
 
     </GridLayout>
@@ -30,7 +36,7 @@
     <GridLayout
         android:id="@+id/fragView"
         android:layout_width="match_parent"
-        android:layout_height="300dp"
+        android:layout_height="350dp"
         android:layout_below="@+id/grid_layout"
         >
 
