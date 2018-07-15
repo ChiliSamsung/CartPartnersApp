@@ -51,6 +51,7 @@
         android:layout_below="@+id/fragView"
         android:progressTint="@android:color/transparent"
         android:splitTrack="false"
+        android:paddingTop="5dp"
         />
 
     <TextView

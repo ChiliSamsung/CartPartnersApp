@@ -58,6 +58,11 @@ public class GraphFragment extends Fragment {
         if (bundle != null) {
             bundledItems = bundle.getParcelableArrayList("ItemsList");
 
+            //if there are no sales in the last "x" days, just stop
+            if(bundledItems.isEmpty()) {
+                return rootView;
+            }
+
             long totalSales = 0;
 
             long firstTimeStamp = 0;

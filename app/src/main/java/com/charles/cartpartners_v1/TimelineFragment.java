@@ -2,6 +2,9 @@ package com.charles.cartpartners_v1;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,12 +12,14 @@ import android.widget.TextView;
 
 import com.charles.cookingapp.R;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
 public class TimelineFragment extends Fragment {
 
-    private List<Item> salesData;
+    private RecyclerView recyclerView;
+    private RecyclerView.LayoutManager layoutManager;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -26,22 +31,33 @@ public class TimelineFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.timeline_layout, container, false);
-        TextView timelineView = rootView.findViewById(R.id.timelineView);
 
         //will call the getParcelableExtra method of the intent object to start the process?
         ArrayList<Item> bundledItems;
+        ArrayList<String> names = new ArrayList<>();
+        ArrayList<String> prices = new ArrayList<>();
+        ArrayList<String> dates = new ArrayList<>();
+        ArrayList<String> quantities = new ArrayList<>();
+        ArrayList<String> types = new ArrayList<>();
         Bundle bundle = this.getArguments();
         if (bundle != null) {
             bundledItems = bundle.getParcelableArrayList("ItemsList");
 
-            StringBuilder builder = new StringBuilder();
-
             for(Item i : bundledItems) {
-                builder.append(i.getTimelineFormat());
-                builder.append("\n");
+                names.add(i.getName());
+                prices.add("" + i.getPrice());
+                dates.add(i.getDate());
+                quantities.add("" + i.getQuantity());
+                types.add(i.getType());
+
             }
 
-            timelineView.setText(builder.toString());
+            recyclerView = rootView.findViewById(R.id.timelineRecycler);
+            layoutManager = new LinearLayoutManager(rootView.getContext());
+            recyclerView.setLayoutManager(layoutManager);
+            TimelineAdapter timelineAdapter = new TimelineAdapter(names, dates, quantities, types, prices);
+            recyclerView.setAdapter(timelineAdapter);
+
         }
 
         return rootView;

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@color/colorPrimary"
+
+    >
+
+    <TextView
+        android:id="@+id/timelineName"
+        android:layout_width="100dp"
+        android:layout_height="20dp"
+        android:paddingLeft="5dp"
+        android:layout_alignParentStart="true"
+        android:textColor="@color/white"
+
+        />
+
+    <TextView
+        android:id="@+id/timelinePrice"
+        android:layout_width="100dp"
+        android:layout_height="20dp"
+        android:layout_toEndOf="@+id/timelineName"
+        android:textColor="@color/white"
+
+        />
+
+    <TextView
+        android:id="@+id/timelineDate"
+        android:layout_width="100dp"
+        android:layout_height="20dp"
+        android:paddingRight="5dp"
+        android:layout_alignParentEnd="true"
+        android:textColor="@color/white"
+
+        />
+
+    <TextView
+        android:id="@+id/timelineQty"
+        android:layout_width="100dp"
+        android:layout_height="20dp"
+        android:layout_toEndOf="@+id/timelineName"
+        android:layout_below="@+id/timelineName"
+        android:textColor="@color/white"
+
+        />
+
+    <TextView
+        android:id="@+id/timelineType"
+        android:layout_width="100dp"
+        android:layout_height="20dp"
+        android:paddingRight="5dp"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@+id/timelineDate"
+        android:textColor="@color/white"
+
+        />
+
+    <TextView
+        android:id="@+id/timelineSpacer"
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:layout_below="@+id/timelineType"
+        android:background="@color/white"
+        />
+
+
+
+
+</RelativeLayout>

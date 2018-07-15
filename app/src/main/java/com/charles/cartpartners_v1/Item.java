@@ -20,9 +20,6 @@ public class Item implements Parcelable{
         this.date = date;
     }
 
-    public String getDate() {
-        return date;
-    }
 
     //returns an expression of the Item suitable for timeline display
     public String getTimelineFormat() {
@@ -35,8 +32,24 @@ public class Item implements Parcelable{
         return quantity * price;
     }
 
+    public String getDate() {
+        return date;
+    }
+
     public String getType() {
         return type;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public String getName() {
+        return name;
     }
 
 

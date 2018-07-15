@@ -1,6 +1,7 @@
 package com.charles.cartpartners_v1;
 
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -47,6 +48,11 @@ public class PieFragment extends Fragment {
         ArrayList<PieEntry> data = new ArrayList<>(); //custom data type
         ArrayList<Item> bundledItems = bundle.getParcelableArrayList("ItemsList");
 
+        //if there are no sales in the last "x" days, displays "no chart data available"
+        if(bundledItems.isEmpty()) {
+            return rootView;
+        }
+
         for (int i = 0; i < bundledItems.size(); i++) {
             String itemType = bundledItems.get(i).getType();
             float value = (float) bundledItems.get(i).getTotalValue();
@@ -73,17 +79,16 @@ public class PieFragment extends Fragment {
         pieDataSet.setValueTextColor(Color.WHITE);
 
         ArrayList<Integer> colors = new ArrayList<>();
-        colors.add(Color.argb(100, 204, 102, 0));
-        colors.add(Color.argb(100, 0, 102, 0));
-        colors.add(Color.argb(100, 158, 90, 179));
-        colors.add(Color.GREEN);
-        colors.add(Color.CYAN);
-        colors.add(Color.YELLOW);
-        colors.add(Color.MAGENTA);
+        colors.add(Color.argb(255, 102, 0, 51));
+        colors.add(Color.argb(255, 204, 102, 0));
+        colors.add(Color.argb(255, 0, 122, 0));
+        colors.add(Color.argb(255, 158, 90, 179));
+        colors.add(Color.argb(255, 0, 0, 153));
+        colors.add(Color.argb(255, 0, 102, 102));
+        colors.add(Color.argb(255, 153, 255, 255));
+        colors.add(Color.argb(255, 255, 153, 255));
 
         pieDataSet.setColors(colors);
-
-
 
 
         //built - in legend
@@ -95,11 +100,20 @@ public class PieFragment extends Fragment {
         PieData pieData = new PieData(pieDataSet);
         chart.setData(pieData);
 
+        //add extra "From and To" date text in top right
+        String endDate = bundledItems.get(0).getDate();
+        String startDate = bundledItems.get(bundledItems.size() - 1).getDate();
+        String descriptionText = "(Dollars)";
+
         Description d = new Description();
-        d.setText("Dollars");
+        d.setText(descriptionText);
         d.setTextSize(12);
         chart.setDescription(d);
 
+
+        chart.setCenterText(startDate + " to \n" + endDate);
+        chart.setTransparentCircleRadius(45);
+        chart.setHoleRadius(35);
         chart.invalidate();
 
         return rootView;
