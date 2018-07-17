@@ -30,14 +30,14 @@
 
         <activity android:name="com.charles.cartpartners_v1.MainActivity"></activity>
         <activity android:name="com.charles.cartpartners_v1.RecipeActivity"></activity>
-        <activity android:name="com.charles.cartpartners_v1.MetricsView">
+        <activity android:name="com.charles.cartpartners_v1.SignInActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <activity android:name="com.charles.cartpartners_v1.SignInActivity"></activity>
+        <activity android:name="com.charles.cartpartners_v1.MetricsView"></activity>
 
         <activity
             android:name="com.charles.cartpartners_v1.SettingsActivity"

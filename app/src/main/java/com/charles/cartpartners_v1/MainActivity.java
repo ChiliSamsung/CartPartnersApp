@@ -31,12 +31,6 @@ import com.charles.cookingapp.R;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -44,7 +38,6 @@ public class MainActivity extends AppCompatActivity {
     private DbHelper dbHelper;
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
-
 
     enum specifications {
         MEXICAN, CHINESE, ITALIAN, AMERICAN, KOREAN, JAPANESE
@@ -83,24 +76,8 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences sharedPref =
                 PreferenceManager.getDefaultSharedPreferences(this);
 
-        boolean userIsSignedIn = sharedPref.getBoolean("userSignedIn", false);
-        System.out.println("SIGNED IN BOOLEAN: " + userIsSignedIn);
 
-        boolean rememberLogin = sharedPref.getBoolean("remember_login", false);
-
-        //TODO: get the "remember login" functionality to work
-        if (userIsSignedIn || rememberLogin) {
-            //TODO: go fetch the user's accountId so that will inform the pulling the data
-
-
-        } else {
-            //pull up the SignInActivity
-            Intent i = new Intent(this, SignInActivity.class);
-            startActivity(i);
-
-        }
-
-
+        /*
         String marketPref = sharedPref.getString("sync_frequency", "30");
         Toast.makeText(this, "Sync Freq: " + marketPref, Toast.LENGTH_SHORT).show();
 
@@ -123,7 +100,6 @@ public class MainActivity extends AppCompatActivity {
             JobScheduler scheduler = this.getSystemService(JobScheduler.class);
             scheduler.schedule(jobBuilder.build());
 
-
         } else {
             writer.putBoolean(backgroundServiceSetupID, true);
             writer.apply();
@@ -140,14 +116,12 @@ public class MainActivity extends AppCompatActivity {
             //schedule the job
             JobScheduler scheduler = this.getSystemService(JobScheduler.class);
             scheduler.schedule(jobBuilder.build());
-
         }
+        */
 
 
         //update the whole database
         updateOffline();
-
-
 
         //RECYCLERVIEW SETUP
         recyclerView = findViewById(R.id.recipe_listRecyclerView);
@@ -253,24 +227,24 @@ public class MainActivity extends AppCompatActivity {
                     layoutManager = new LinearLayoutManager(arg1.getContext());
                     recyclerView.setLayoutManager(layoutManager);
 
-                    chooseCuisine(specifications.CHINESE);
+                    //chooseCuisine(specifications.CHINESE);
 
 
                 } else if (pos == 2) {
                     Toast.makeText(arg1.getContext(), "Italian Selected", Toast.LENGTH_SHORT).show();
-                    chooseCuisine(specifications.ITALIAN);
+                    //chooseCuisine(specifications.ITALIAN);
                 } else if (pos == 3) {
                     Toast.makeText(arg1.getContext(), "American Selected", Toast.LENGTH_SHORT).show();
-                    chooseCuisine(specifications.AMERICAN);
+                    //chooseCuisine(specifications.AMERICAN);
                 } else if (pos == 4) {
                     Toast.makeText(arg1.getContext(), "Korean Selected", Toast.LENGTH_SHORT).show();
-                    chooseCuisine(specifications.KOREAN);
+                    //chooseCuisine(specifications.KOREAN);
                 } else if (pos == 5) {
                     Toast.makeText(arg1.getContext(), "Japanese Selected", Toast.LENGTH_SHORT).show();
-                    chooseCuisine(specifications.JAPANESE);
+                    //chooseCuisine(specifications.JAPANESE);
                 } else if (pos == 6) {
                     Toast.makeText(arg1.getContext(), "Mexican Selected", Toast.LENGTH_SHORT).show();
-                    chooseCuisine(specifications.MEXICAN);
+                    //chooseCuisine(specifications.MEXICAN);
                 }
 
                 // An item was selected. You can retrieve the selected item using
@@ -283,52 +257,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
-
-    //sets the RecyclerView to display all the cuisines that satisfy the specification cuisine
-    public void chooseCuisine(specifications s) {
-        List<RecipeContract.Recipe> recipes = dbHelper.getRecipes(s);
-
-        ArrayList<String> names = new ArrayList<>();
-        ArrayList<String> dollars = new ArrayList<>();
-        ArrayList<String> cuisines = new ArrayList<>();
-        ArrayList<String> descriptions = new ArrayList<>();
-        ArrayList<String> imageNames = new ArrayList<>();
-
-        for(RecipeContract.Recipe r : recipes) {
-            names.add(r.name);
-            dollars.add(r.dollars);
-            cuisines.add(r.cuisine);
-            descriptions.add(r.description);
-            imageNames.add(r.imageName);
-        }
-
-        MainRecyclerAdapter recyclerAdapter = new MainRecyclerAdapter(names, dollars, cuisines, descriptions, imageNames);
-        recyclerView.setAdapter(recyclerAdapter);
-    }
-
-    //sets the RecyclerView to display all the recipes that there are
-    public void chooseAllRecipes() {
-        List<RecipeContract.Recipe> recipes = dbHelper.getAllRecipes();
-
-        ArrayList<String> names = new ArrayList<>();
-        ArrayList<String> dollars = new ArrayList<>();
-        ArrayList<String> cuisines = new ArrayList<>();
-        ArrayList<String> descriptions = new ArrayList<>();
-        ArrayList<String> imageNames = new ArrayList<>();
-
-        for(RecipeContract.Recipe r : recipes) {
-            names.add(r.name);
-            dollars.add(r.dollars);
-            cuisines.add(r.cuisine);
-            descriptions.add(r.description);
-            imageNames.add(r.imageName);
-        }
-
-        MainRecyclerAdapter recyclerAdapter = new MainRecyclerAdapter(names, dollars, cuisines, descriptions, imageNames);
-        recyclerView.setAdapter(recyclerAdapter);
-    }
-
 
     //required for API 26 and higher to post notifications
     private void createNotificationChannel() {

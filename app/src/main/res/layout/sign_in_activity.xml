@@ -13,20 +13,6 @@
 
         />
 
-    <!--
-    <TextView
-        android:id="@+id/cartpartners"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:textSize="40sp"
-        android:textStyle="bold"
-        android:text="@string/cartpartners"
-        android:layout_below="@+id/loginTitle"
-        android:paddingBottom="20dp"
-        />
-        -->
-
     <ImageView
         android:id="@+id/logo"
         android:layout_width="wrap_content"
@@ -57,12 +43,40 @@
         android:inputType="textPassword"
         />
 
+    <TextView
+        android:id="@+id/spacer2"
+        android:layout_width="20dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/input_password"
+        android:layout_toStartOf="@id/input_password"
+        />
+
+    <Switch
+        android:id="@+id/remember_me_switch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/input_password"
+        android:layout_toEndOf="@id/spacer2"
+        android:theme = "@style/SwitchTheme"
+        android:paddingRight="5dp"
+        android:paddingLeft="5dp"
+        />
+
+    <TextView
+        android:id="@+id/remember_me_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/remember_me_switch"
+        android:layout_below="@id/input_password"
+        android:text="Remember me"
+        />
+
     <Button
         android:id="@+id/login_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/login"
-        android:layout_below="@+id/input_password"
+        android:layout_below="@+id/remember_me_switch"
         android:layout_centerHorizontal="true"
         />
 

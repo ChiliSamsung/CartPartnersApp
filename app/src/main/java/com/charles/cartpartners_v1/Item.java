@@ -21,7 +21,7 @@ public class Item implements Parcelable{
     }
 
 
-    //returns an expression of the Item suitable for timeline display
+    /* Getters to return data */
     public String getTimelineFormat() {
         String expression = "";
         expression += name + " | Qty:" + quantity + " " + type + " " + price + " | " + date;
@@ -53,6 +53,8 @@ public class Item implements Parcelable{
     }
 
 
+    /* Required methods for Parcelable interface below. Allows instances of this class
+    *  to "travel" from MetricsView to PieFragment, TimelineFragment, GraphFragment.*/
     public void writeToParcel(Parcel dest, int flags) {
         //order matters. Maintain the same order reading and writing
         dest.writeString(id);
@@ -72,7 +74,6 @@ public class Item implements Parcelable{
         price = parcel.readDouble();
         quantity = parcel.readInt();
         date = parcel.readString();
-
     }
 
     //creator - used when un-parceling our parcel (creating the object)
@@ -93,9 +94,5 @@ public class Item implements Parcelable{
     public int describeContents() {
         return hashCode();
     }
-
-
-
-
 
 }

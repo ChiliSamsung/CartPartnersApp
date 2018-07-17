@@ -1,7 +1,6 @@
 package com.charles.cartpartners_v1;
 
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -13,35 +12,25 @@ import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.XAxis;
-import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.formatter.DefaultAxisValueFormatter;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.utils.EntryXComparator;
 
 import java.sql.Timestamp;
 import java.text.DateFormat;
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Locale;
-
 
 public class GraphFragment extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        LineChart chart = new LineChart(this.getContext());
-
-
-
     }
 
     @Override
@@ -54,19 +43,21 @@ public class GraphFragment extends Fragment {
         Bundle bundle = this.getArguments();
         ArrayList<Entry> entries = new ArrayList<>(); //PhilJay version of Entry for charts
 
-
         if (bundle != null) {
             bundledItems = bundle.getParcelableArrayList("ItemsList");
 
-            //if there are no sales in the last "x" days, just stop
+            //if there are no sales in the last "x" days, displays "no chart data available"
             if(bundledItems.isEmpty()) {
                 return rootView;
             }
 
             long totalSales = 0;
-
             long firstTimeStamp = 0;
-            //the "smallest" timestamp is the oldest date which is the last in the arrayList
+            /*
+                1. Gets the oldest date as a Timestamp. This will have the lowest .getTime() value
+                2. To scale the line graph correctly, all the Timestamps need to have this oldest .getTime() value subtracted from them
+                3. This will put the oldest timestamp at x = 0, which is what we want
+             */
             try {
                 DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
                 Date parsedDate = formatter.parse(bundledItems.get(bundledItems.size() - 1).getDate());
@@ -75,32 +66,29 @@ public class GraphFragment extends Fragment {
             } catch (Exception e) {
             }
 
+            //gets all the data, subtracts firstTimeStamp from each to scale it
             final ArrayList<String> dateLabels = new ArrayList<>();
-
             for(int i = bundledItems.size(); i > 0; i--) {
                 try {
                     totalSales += bundledItems.get(i).getTotalValue();
-
                     DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
                     Date parsedDate = formatter.parse(bundledItems.get(i).getDate());
                     Timestamp timestamp = new java.sql.Timestamp(parsedDate.getTime());
                     entries.add(new Entry((timestamp.getTime() - firstTimeStamp) / 10000, totalSales));
-
-                    dateLabels.add(bundledItems.get(i).getDate().substring(5,10));
-
-
+                    dateLabels.add(bundledItems.get(i).getDate().substring(5, 10));
                 } catch (Exception e) {
                 }
             }
 
+            //sort into ascending order
             Collections.sort(entries, new EntryXComparator());
 
+            //attaches the data accumulated to the chart
             LineDataSet dataSet = new LineDataSet(entries, "Total Sales by Time");
             dataSet.setColor(Color.MAGENTA);
             dataSet.setValueTextColor(Color.BLUE);
             LineData lineData = new LineData(dataSet);
             chart.setData(lineData);
-
 
             //setup the xAxis labels
             XAxis xAxis = chart.getXAxis();
@@ -113,7 +101,6 @@ public class GraphFragment extends Fragment {
                         return dateLabels.get(((int) value) / 100000);
                     }
                 }
-
             });
             xAxis.setLabelRotationAngle(0);
             xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
@@ -123,9 +110,7 @@ public class GraphFragment extends Fragment {
             d.setText("Dollars");
             d.setTextSize(12);
             chart.setDescription(d);
-
             chart.invalidate(); //refreshes
-
         }
 
         return rootView;

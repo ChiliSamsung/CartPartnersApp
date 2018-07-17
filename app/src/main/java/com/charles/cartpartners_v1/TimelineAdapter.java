@@ -4,15 +4,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.charles.cookingapp.R;
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -24,7 +18,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.ViewHo
     private ArrayList<String> types;
     private ArrayList<String> prices;
 
-    public TimelineAdapter(ArrayList<String> names, ArrayList<String> dates, ArrayList<String> quantities,
+    TimelineAdapter(ArrayList<String> names, ArrayList<String> dates, ArrayList<String> quantities,
                            ArrayList<String> types, ArrayList<String> prices) {
         this.dates = dates;
         this.names = names;
@@ -36,16 +30,13 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.ViewHo
     @Override
     public TimelineAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.timeline_entry_layout, parent, false);
-
         return new TimelineAdapter.ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(TimelineAdapter.ViewHolder holder, final int position) {
-
         final String name = names.get(position);
         holder.timelineName.setText(name);
-
         final String price = "$" + prices.get(position);
         holder.timelinePrice.setText(price);
         final String date = dates.get(position);
@@ -54,7 +45,6 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.ViewHo
         holder.timelineQty.setText(quantity);
         final String type = types.get(position);
         holder.timelineType.setText(type);
-
     }
 
     @Override
@@ -75,12 +65,9 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.ViewHo
         @BindView(R.id.timelineType)
         TextView timelineType;
 
-
         ViewHolder(View v) {
             super(v);
             ButterKnife.bind(this, v);
         }
-
     }
-
 }

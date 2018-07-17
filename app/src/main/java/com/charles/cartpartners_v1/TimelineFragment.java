@@ -4,17 +4,11 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
-
 import com.charles.cookingapp.R;
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.List;
 
 public class TimelineFragment extends Fragment {
 
@@ -24,8 +18,6 @@ public class TimelineFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
     }
 
     @Override
@@ -49,7 +41,6 @@ public class TimelineFragment extends Fragment {
                 dates.add(i.getDate());
                 quantities.add("" + i.getQuantity());
                 types.add(i.getType());
-
             }
 
             recyclerView = rootView.findViewById(R.id.timelineRecycler);
@@ -57,9 +48,7 @@ public class TimelineFragment extends Fragment {
             recyclerView.setLayoutManager(layoutManager);
             TimelineAdapter timelineAdapter = new TimelineAdapter(names, dates, quantities, types, prices);
             recyclerView.setAdapter(timelineAdapter);
-
         }
-
         return rootView;
     }
 }

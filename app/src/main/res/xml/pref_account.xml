@@ -1,13 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <SwitchPreference
-        android:defaultValue="false"
-        android:key="remember_login"
-        android:summary="@string/remember_login_summary"
-        android:title="@string/remember_login_title"
-        />
-
     <Preference
         android:title="@string/sign_out_title"
         android:key="sign_out_button"

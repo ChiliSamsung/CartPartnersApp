@@ -1,7 +1,6 @@
 package com.charles.cartpartners_v1;
 
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -9,18 +8,15 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.charles.cookingapp.R;
-import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.Legend;
-import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -28,9 +24,6 @@ public class PieFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
-
     }
 
     //TODO: improve pie chart
@@ -87,9 +80,7 @@ public class PieFragment extends Fragment {
         colors.add(Color.argb(255, 0, 102, 102));
         colors.add(Color.argb(255, 153, 255, 255));
         colors.add(Color.argb(255, 255, 153, 255));
-
         pieDataSet.setColors(colors);
-
 
         //built - in legend
         Legend legend = chart.getLegend();
@@ -109,7 +100,6 @@ public class PieFragment extends Fragment {
         d.setText(descriptionText);
         d.setTextSize(12);
         chart.setDescription(d);
-
 
         chart.setCenterText(startDate + " to \n" + endDate);
         chart.setTransparentCircleRadius(45);

@@ -2,6 +2,9 @@ package com.charles.cartpartners_v1;
 
 import android.annotation.TargetApi;
 import android.app.PendingIntent;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -9,13 +12,11 @@ import android.content.res.Configuration;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
-import android.opengl.Visibility;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
-import android.support.v4.app.NavUtils;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.ActionBar;
@@ -24,13 +25,11 @@ import android.preference.PreferenceManager;
 import android.preference.RingtonePreference;
 import android.text.TextUtils;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.charles.cookingapp.R;
-
 import java.util.List;
 
-import static android.app.Notification.EXTRA_NOTIFICATION_ID;
-import static android.app.Notification.GROUP_ALERT_CHILDREN;
 import static android.app.Notification.VISIBILITY_PRIVATE;
 
 /**
@@ -50,9 +49,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
      * A preference value change listener that updates the preference's summary
      * to reflect its new value.
      */
-
-    private boolean onHeadersView = true;
-
     private static Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() {
         @Override
         public boolean onPreferenceChange(Preference preference, Object value) {
@@ -145,7 +141,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         if (actionBar != null) {
             // Show the Up button in the action bar.
             actionBar.setDisplayHomeAsUpEnabled(true);
-
         }
     }
 
@@ -226,7 +221,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             myPref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 public boolean onPreferenceClick(Preference preference) {
 
-                    //experiment with notifications
                     // Create an explicit intent for an Activity in your app
                     String CHANNEL_ID = "123";
                     Intent intent = new Intent(preference.getContext(), MainActivity.class);
@@ -250,7 +244,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                     notificationManager.notify(notificationId, mBuilder.build());
 
                     //NOTES: after there are 4 of these, it automatically groups them together by default
-
                     return true;
                 }
             });
@@ -287,11 +280,46 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             addPreferencesFromResource(R.xml.pref_data_sync);
             setHasOptionsMenu(true);
 
-            // Bind the summaries of EditText/List/Dialog/Ringtone preferences
-            // to their values. When their values change, their summaries are
-            // updated to reflect the new value, per the Android Design
-            // guidelines.
+            //findPreference(key) fetches the current value of the preference with that particular string key
+            //bindPreferenceSummary just updates the summary display to value it is given
             bindPreferenceSummaryToValue(findPreference("sync_frequency"));
+
+            ListPreference syncFrequencies = (ListPreference) findPreference("sync_frequency");
+            syncFrequencies.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object o) {
+                    String newValue = (String) o;
+                    if (newValue.equals("-1")) {
+                        JobScheduler scheduler = preference.getContext().getSystemService(JobScheduler.class);
+                        scheduler.cancel(1234);  //see SignInActivity, this is the ID used for the BackgroundService job
+                        Toast.makeText(preference.getContext(), "Background Process Terminated", Toast.LENGTH_SHORT).show();
+                    } else {
+                        //cancel the old job first
+                        JobScheduler scheduler = preference.getContext().getSystemService(JobScheduler.class);
+                        scheduler.cancel(1234);  //see SignInActivity, this is the ID used for the BackgroundService job
+
+                        //schedule the new job with new interval
+                        ComponentName backgroundService = new ComponentName(preference.getContext(), BackgroundService.class);
+                        int jobID = 1234;
+                        JobInfo.Builder jobBuilder = new JobInfo.Builder(jobID, backgroundService);
+                        jobBuilder.setPersisted(true);
+                        //optional: jobBuilder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_NOT_ROAMING);
+                        long intervalDuration = Long.parseLong(newValue);
+                        jobBuilder.setPeriodic(intervalDuration * 60000);
+                        scheduler.schedule(jobBuilder.build());
+                        Toast.makeText(preference.getContext(), "Sync Freq: " + newValue, Toast.LENGTH_SHORT).show();
+
+                        System.out.println("Total background processes" + scheduler.getAllPendingJobs().size());
+                    }
+
+                    /*redirect to go back to Settings page
+                    (this was a workaround solution to problems I was having with updating the text and changes not applying)
+                     */
+                    startActivity(new Intent(getActivity(), SettingsActivity.class));
+                    return true; //update the state of the preference with the new value
+                }
+            });
+
         }
 
         @Override
@@ -316,32 +344,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.pref_account);
 
-
-            /*
-            Preference flipSwitch = findPreference("remember_login");
-            flipSwitch.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                @Override
-                public boolean onPreferenceChange(Preference preference, Object o) {
-                    preference.
-
-                    SharedPreferences sharedPref =
-                            PreferenceManager.getDefaultSharedPreferences(preference.getContext());
-                    boolean rememberLogin = sharedPref.getBoolean("rememberLogin", false);
-                    SharedPreferences.Editor editor = sharedPref.edit();
-                    //flip to the opposite
-                    if (rememberLogin) {
-                        editor.putBoolean("rememberLogin", false);
-                    } else {
-                        editor.putBoolean("rememberLogin", true);
-                    }
-                    editor.apply();
-
-                    return false;
-                }
-            });
-            */
-
-
             Preference myPref = findPreference("sign_out_button");
             myPref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 public boolean onPreferenceClick(Preference preference) {
@@ -351,10 +353,14 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                     SharedPreferences.Editor editor = sharedPref.edit();
                     editor.remove("userPassword");
                     editor.remove("userEmail");
-                    editor.putBoolean("userSignedIn", false);
+                    editor.putBoolean("userRememberMe", false);
                     editor.apply();
 
-                    Intent i = new Intent(preference.getContext(), MainActivity.class);
+                    //cancel the notifications background process if the user signs out
+                    JobScheduler scheduler = preference.getContext().getSystemService(JobScheduler.class);
+                    scheduler.cancel(1234);  //see SignInActivity, this is the ID used for the BackgroundService job
+
+                    Intent i = new Intent(preference.getContext(), SignInActivity.class);
                     startActivity(i);
 
                     return true;
@@ -362,7 +368,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             });
 
             setHasOptionsMenu(true);
-
         }
 
         @Override
@@ -377,7 +382,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     }
 
 
-    //for the settingsActivity view, its back button will return it to the mainActivity
+    //for the settingsActivity view itself, its back button will return it to the mainActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -389,10 +394,5 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
-
-
-
-
 
 }
