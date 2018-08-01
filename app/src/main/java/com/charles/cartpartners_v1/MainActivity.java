@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -31,6 +32,7 @@ import com.charles.cookingapp.R;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -50,18 +52,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         //get all the permissions
-        int permissionCheck = ContextCompat.checkSelfPermission(this,
-                Manifest.permission.CAMERA);
-
         int permissionCheck2 = ContextCompat.checkSelfPermission(this,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE);
-
-        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.CAMERA},
-                    MY_PERMISSIONS_REQUEST);
-        }
-
         if (permissionCheck2 != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
@@ -71,105 +63,40 @@ public class MainActivity extends AppCompatActivity {
         //setup notifications channel
         createNotificationChannel();
 
-
-        //setup sharedpreferences storage
-        SharedPreferences sharedPref =
-                PreferenceManager.getDefaultSharedPreferences(this);
-
-
-        /*
-        String marketPref = sharedPref.getString("sync_frequency", "30");
-        Toast.makeText(this, "Sync Freq: " + marketPref, Toast.LENGTH_SHORT).show();
-
-        //setup the jobuilders and jobscheduler. But only if it hasn't been setup before
-        //NOTE: maybe could just have it run each time you open the app. Since that's not bad
-        SharedPreferences.Editor writer = sharedPref.edit();
-        String backgroundServiceSetupID = "backgroundSetup";
-        boolean backgroundServiceSetup = sharedPref.getBoolean(backgroundServiceSetupID, false);
-        if (backgroundServiceSetup) {
-            //can still schedule it, since it would need to update the new job duration value
-            ComponentName backgroundService = new ComponentName(this, BackgroundService.class);
-            int jobID = 1234;
-            JobInfo.Builder jobBuilder = new JobInfo.Builder(jobID, backgroundService);
-            jobBuilder.setPersisted(true);
-            //jobBuilder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_NOT_ROAMING);
-            long intervalDuration = Long.parseLong(marketPref);
-            jobBuilder.setPeriodic(intervalDuration * 60000);
-
-            //schedule the job
-            JobScheduler scheduler = this.getSystemService(JobScheduler.class);
-            scheduler.schedule(jobBuilder.build());
-
-        } else {
-            writer.putBoolean(backgroundServiceSetupID, true);
-            writer.apply();
-
-            //setup the job
-            ComponentName backgroundService = new ComponentName(this, BackgroundService.class);
-            int jobID = 1234;
-            JobInfo.Builder jobBuilder = new JobInfo.Builder(jobID, backgroundService);
-            jobBuilder.setPersisted(true);
-            //jobBuilder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_NOT_ROAMING);
-            long intervalDuration = Long.parseLong(marketPref);
-            jobBuilder.setPeriodic(intervalDuration * 60000);
-
-            //schedule the job
-            JobScheduler scheduler = this.getSystemService(JobScheduler.class);
-            scheduler.schedule(jobBuilder.build());
-        }
-        */
-
-
         //update the whole database
         updateOffline();
 
-        //RECYCLERVIEW SETUP
+        //Recycler View SETUP
         recyclerView = findViewById(R.id.recipe_listRecyclerView);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-        //chooseAllRecipes();
-
+        setupRecyclerView();
 
         //make the spinner
-        spinnerSetup();
+        //spinnerSetup();
     }
 
 
     //TODO: need a method to pull in data from online
 
 
-
+    public void setupRecyclerView() {
+        ArrayList<Item> itemListings = dbHelper.fetchItemListings();
+        MainRecyclerAdapter adapter = new MainRecyclerAdapter(itemListings);
+        recyclerView.setAdapter(adapter);
+    }
 
 
 
 
     //pull data from offline database (.txt file)
+    //this needs to store to a different table though since the data is different here
     public void updateOffline() {
         dbHelper = new DbHelper(this);
         dbHelper.clearDb();
 
-        //reading in the recipe data stuff
-        /*
-        BufferedReader br = new BufferedReader( new InputStreamReader(getResources().openRawResource(R.raw.recipedata)));
-        try{
-            //right now there are 9 recipes in the data txt file
-            for (int i = 0; i < 9; i++) {
-                String name = br.readLine();
-                String cuisine = br.readLine();
-                String dollar = br.readLine();
-                String description = br.readLine();
-                String imageName = br.readLine();
-                br.readLine(); //skip an extra line down
-                dbHelper.insertRecipe(name, description, dollar, cuisine, imageName);
-            }
-
-        } catch (IOException e) {
-            //do stuff
-        }
-        */
-
         //reading in the sales data stuff
-        BufferedReader br = new BufferedReader( new InputStreamReader(getResources().openRawResource(R.raw.fakedata)));
+        BufferedReader br = new BufferedReader( new InputStreamReader(getResources().openRawResource(R.raw.fakelistings)));
         try{
 
             while(true) {
@@ -177,16 +104,15 @@ public class MainActivity extends AppCompatActivity {
                 String itemId = br.readLine();
                 String itemName = br.readLine();
                 String itemPrice = br.readLine();
-                String itemType = br.readLine();
                 String itemQuantity = br.readLine();
-                String date = br.readLine();
+                String itemType = br.readLine();
 
                 br.readLine(); //skip an extra line down
                 if(itemId == null || itemName == null || itemPrice == null) {
                     break; //EOF
                 }
 
-                dbHelper.insertSale(itemId, itemName, itemPrice, itemType, itemQuantity, date);
+                dbHelper.insertItemListing(itemId, itemName, itemPrice, itemType, itemQuantity);
             }
 
         } catch (IOException e) {
@@ -278,7 +204,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
     //make the actionbar based on the menu_items menu XML
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -298,7 +223,6 @@ public class MainActivity extends AppCompatActivity {
                 Intent i_2 = new Intent(this, SettingsActivity.class);
                 startActivity(i_2);
                 break;
-
             case R.id.action_main:
                 Intent i_3 = new Intent(this, MainActivity.class);
                 startActivity(i_3);
@@ -307,7 +231,6 @@ public class MainActivity extends AppCompatActivity {
             default:
                 break;
         }
-
         return true;
     }
 

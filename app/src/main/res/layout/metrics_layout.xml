@@ -33,11 +33,19 @@
 
     </GridLayout>
 
+    <Spinner
+        android:id="@+id/month_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/grid_layout"
+        android:layout_centerHorizontal="true"
+        />
+
     <GridLayout
         android:id="@+id/fragView"
         android:layout_width="match_parent"
-        android:layout_height="350dp"
-        android:layout_below="@+id/grid_layout"
+        android:layout_height="320dp"
+        android:layout_below="@+id/month_spinner"
         >
 
     </GridLayout>

@@ -11,8 +11,10 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.SeekBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.charles.cookingapp.R;
@@ -56,12 +58,26 @@ public class MetricsView extends AppCompatActivity{
             }
         });
 
+        //setup the spinner to select month to view data
+        final Spinner spinner = findViewById(R.id.month_spinner);
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.months_array, android.R.layout.simple_spinner_item);
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        spinner.setAdapter(adapter);
+
+        //NOTE: can access the value of the spinner via:
+        spinner.getSelectedItem();
+
         //Setup the "Timeline" button
         Button timelineButton = findViewById(R.id.TimelineButton);
         timelineButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ArrayList<Parcelable> items = database.fetchSalesData(seekbar.getProgress());
+                String month = spinner.getSelectedItem().toString();
+                ArrayList<Parcelable> items = database.fetchSalesData(seekbar.getProgress(), month);
 
                 FragmentManager fragmentManager = getSupportFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -69,6 +85,7 @@ public class MetricsView extends AppCompatActivity{
                 //put the parcelables into the bundle, then give that bundle to a new Fragment
                 Bundle bundle = new Bundle();
                 bundle.putParcelableArrayList("ItemsList", items); //the key is the string
+                bundle.putString("Month", month);
                 Fragment timelineFrag = new TimelineFragment();
                 timelineFrag.setArguments(bundle);
 
@@ -84,7 +101,8 @@ public class MetricsView extends AppCompatActivity{
         graphButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ArrayList<Parcelable> items = database.fetchSalesData(seekbar.getProgress());
+                String month = spinner.getSelectedItem().toString();
+                ArrayList<Parcelable> items = database.fetchSalesData(seekbar.getProgress(), month);
 
                 FragmentManager fragmentManager = getSupportFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -108,7 +126,8 @@ public class MetricsView extends AppCompatActivity{
         pieChartButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ArrayList<Parcelable> items = database.fetchSalesData(seekbar.getProgress());
+                String month = spinner.getSelectedItem().toString();
+                ArrayList<Parcelable> items = database.fetchSalesData(seekbar.getProgress(), month);
 
                 FragmentManager fragmentManager = getSupportFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();

@@ -359,6 +359,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                     //cancel the notifications background process if the user signs out
                     JobScheduler scheduler = preference.getContext().getSystemService(JobScheduler.class);
                     scheduler.cancel(1234);  //see SignInActivity, this is the ID used for the BackgroundService job
+                    Toast.makeText(preference.getContext(), "Background Process Terminated", Toast.LENGTH_SHORT).show();
 
                     Intent i = new Intent(preference.getContext(), SignInActivity.class);
                     startActivity(i);

@@ -8,6 +8,8 @@ import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputFilter;
 import android.text.Spanned;
@@ -36,20 +38,10 @@ import butterknife.ButterKnife;
 
 public class MainRecyclerAdapter extends RecyclerView.Adapter<MainRecyclerAdapter.ViewHolder> {
 
-    private ArrayList<String> names;
-    private ArrayList<String> dollars;
-    private ArrayList<String> cuisines;
-    private ArrayList<String> descriptions;
-    private ArrayList<String> images;
+    private ArrayList<Item> itemListings;
 
-    public MainRecyclerAdapter(ArrayList<String> names, ArrayList<String> dollars, ArrayList<String> cuisines,
-                               ArrayList<String> descriptions, ArrayList<String> imageNames) {
-        this.names = names;
-        this.dollars = dollars;
-        this.cuisines = cuisines;
-        this.descriptions = descriptions;
-        this.images = imageNames;
-
+    public MainRecyclerAdapter(ArrayList<Item> itemListings) {
+        this.itemListings = itemListings;
     }
 
     @Override
@@ -61,16 +53,19 @@ public class MainRecyclerAdapter extends RecyclerView.Adapter<MainRecyclerAdapte
 
     @Override
     public void onBindViewHolder(MainRecyclerAdapter.ViewHolder holder, final int position) {
-
         //get the information stored in the arraylists, then make this element look nice
-        final String name = names.get(position);
+        final String name = itemListings.get(position).getName();
         holder.name.setText(name);
-        final String cuisine = cuisines.get(position);
-        holder.cuisine.setText(cuisine);
-        final String dollar = dollars.get(position);
+        final String type = itemListings.get(position).getType();
+        final String quantity = "" + itemListings.get(position).getQuantity();
+        final String result = type + " | Qty: " + quantity;
+        holder.cuisine.setText(result);
+        final String dollar = "" + itemListings.get(position).getPrice();
         holder.dollars.setText(dollar);
-        final String description = descriptions.get(position);
 
+        //TODO: BELOW: these need to be added back in later
+        /*
+        final String description = descriptions.get(position);
         //snips the description smaller so it fits in the view well
         String shortened_description = description;
         if (description.length() > 40) {
@@ -78,11 +73,11 @@ public class MainRecyclerAdapter extends RecyclerView.Adapter<MainRecyclerAdapte
             shortened_description += "...";
         }
         holder.description.setText(shortened_description);
+        */
 
-
+        /*
         //TESTING: getting the images to work
         final String imageName = images.get(position);
-
         Resources resources = holder.name.getContext().getResources();
         int resourceID = resources.getIdentifier(imageName, "drawable", holder.name.getContext().getPackageName());  //don't want the .png suffix etc. on the imageName
         holder.imageView.setImageResource(resourceID);
@@ -100,6 +95,7 @@ public class MainRecyclerAdapter extends RecyclerView.Adapter<MainRecyclerAdapte
                 v.getContext().startActivity(i);
             }
         });
+        */
 
         holder.sale_button.setOnClickListener(new View.OnClickListener() {
 
@@ -150,7 +146,7 @@ public class MainRecyclerAdapter extends RecyclerView.Adapter<MainRecyclerAdapte
 
                         //since a "click" is an ACTION_DOWN followed by an ACTION_UP
                         if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-                            DatePickerDialog datePicker = new DatePickerDialog(view.getContext());
+                            DatePickerDialog datePicker = new DatePickerDialog(view.getContext(), R.style.AlertDialogTheme);
                             datePicker.setOnDateSetListener(new DatePickerDialog.OnDateSetListener() {
                                 @Override
                                 public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
@@ -212,7 +208,7 @@ public class MainRecyclerAdapter extends RecyclerView.Adapter<MainRecyclerAdapte
 
                         //since a "click" is an ACTION_DOWN followed by an ACTION_UP
                         if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-                            DatePickerDialog datePicker = new DatePickerDialog(view.getContext());
+                            DatePickerDialog datePicker = new DatePickerDialog(view.getContext(), R.style.AlertDialogTheme);
                             datePicker.setOnDateSetListener(new DatePickerDialog.OnDateSetListener() {
                                 @Override
                                 public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
@@ -252,7 +248,6 @@ public class MainRecyclerAdapter extends RecyclerView.Adapter<MainRecyclerAdapte
                     }
 
                 });
-
 
                 final EditText salePrice = salePrompt.findViewById(R.id.new_price);
                 salePrice.setFilters(new InputFilter[] {new DecimalDigitsInputFilter(7,2)});
@@ -320,16 +315,12 @@ public class MainRecyclerAdapter extends RecyclerView.Adapter<MainRecyclerAdapte
 
     @Override
     public int getItemCount() {
-        return names.size();
+        return itemListings.size();
     }
 
 
     public void remove(int position) {
-        names.remove(position);
-        cuisines.remove(position);
-        dollars.remove(position);
-        descriptions.remove(position);
-        images.remove(position);
+        itemListings.remove(position);
     }
 
 

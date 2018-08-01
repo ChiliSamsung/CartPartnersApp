@@ -133,6 +133,21 @@
     <string name="timeline_title">Timeline</string>
     <string name="line_graph_title">Line Graph</string>
     <string name="pie_graph_title">Pie Graph</string>
+    <string-array name="months_array">
+        <item>N/A</item>
+        <item>January</item>
+        <item>February</item>
+        <item>March</item>
+        <item>April</item>
+        <item>May</item>
+        <item>June</item>
+        <item>July</item>
+        <item>August</item>
+        <item>September</item>
+        <item>October</item>
+        <item>November</item>
+        <item>December</item>
+    </string-array>
     
 
 </resources>
