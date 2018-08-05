@@ -1,11 +1,12 @@
 package com.charles.cartpartners_v1;
 
-import android.app.job.JobInfo;
-import android.app.job.JobScheduler;
-import android.content.ComponentName;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -34,20 +35,23 @@ public class SignInActivity extends AppCompatActivity {
         Toast.makeText(this, "Sync Freq: " + marketPref, Toast.LENGTH_SHORT).show();
         boolean backgroundServiceActive = sharedPref.getBoolean("backgroundActive", false);
         if (!backgroundServiceActive && (!marketPref.equals("-1"))) {
+
+
             SharedPreferences.Editor writer = sharedPref.edit();
             writer.putBoolean("backgroundActive", true);
             writer.apply();
 
-            ComponentName backgroundService = new ComponentName(this, BackgroundService.class);
-            int jobID = 1234;
-            JobInfo.Builder jobBuilder = new JobInfo.Builder(jobID, backgroundService);
-            jobBuilder.setPersisted(true);
-            //jobBuilder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_NOT_ROAMING);
+            AlarmManager alarmManger = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+            Intent intent = new Intent(this, BackgroundService.class);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 1234, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+
             long intervalDuration = Long.parseLong(marketPref);
-            jobBuilder.setPeriodic(intervalDuration * 60000);
-            //schedule the job
-            JobScheduler scheduler = this.getSystemService(JobScheduler.class);
-            scheduler.schedule(jobBuilder.build());
+            long randomFactor = (long) (Math.random() * 10 * 60000);
+            alarmManger.setInexactRepeating(AlarmManager.ELAPSED_REALTIME,
+                    SystemClock.elapsedRealtime() + randomFactor,
+                    intervalDuration + randomFactor, pendingIntent);
+
+            Toast.makeText(this, "Sync Freq: " + marketPref, Toast.LENGTH_SHORT).show();
         }
 
         /*if the user has previously signed in and asked to be remembered, then skip asking for
@@ -75,7 +79,7 @@ public class SignInActivity extends AppCompatActivity {
                     loginSuccess = true;
                 }
 
-                //TODO: check if login information is success. If so, take it and put it in sharedpreferences
+                //TODO: check if login information is success. If so, take it and put it in shared preferences
                 if (loginSuccess) {
                     SharedPreferences.Editor writer = sharedPref.edit();
                     //this is the Key we have for fetching from sharedPreferences the testPassword

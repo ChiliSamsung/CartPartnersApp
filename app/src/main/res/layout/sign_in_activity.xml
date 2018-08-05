@@ -32,6 +32,7 @@
         android:hint="@string/email_hint"
         android:layout_below="@+id/logo"
         android:layout_centerHorizontal="true"
+        android:inputType="textEmailAddress"
         />
     <EditText
         android:id="@+id/input_password"

@@ -20,14 +20,7 @@ public class Item implements Parcelable{
         this.date = date;
     }
 
-
     /* Getters to return data */
-    public String getTimelineFormat() {
-        String expression = "";
-        expression += name + " | Qty:" + quantity + " " + type + " " + price + " | " + date;
-        return expression;
-    }
-
     public double getTotalValue() {
         return quantity * price;
     }

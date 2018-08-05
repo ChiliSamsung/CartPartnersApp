@@ -3,15 +3,9 @@ package com.charles.cartpartners_v1;
 import android.Manifest;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.job.JobInfo;
-import android.app.job.JobScheduler;
-import android.content.ComponentName;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
-import android.os.Parcelable;
-import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -25,7 +19,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import com.charles.cookingapp.R;
 
@@ -33,16 +26,16 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class MainActivity extends AppCompatActivity {
 
-    private int MY_PERMISSIONS_REQUEST = 1;
     private DbHelper dbHelper;
     private RecyclerView recyclerView;
-    private RecyclerView.LayoutManager layoutManager;
 
     enum specifications {
-        MEXICAN, CHINESE, ITALIAN, AMERICAN, KOREAN, JAPANESE
+        ANY, PRICE, ALPHABETICAL, QUANTITY
     }
 
 
@@ -50,6 +43,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        int MY_PERMISSIONS_REQUEST = 1;
 
         //get all the permissions
         int permissionCheck2 = ContextCompat.checkSelfPermission(this,
@@ -68,20 +63,22 @@ public class MainActivity extends AppCompatActivity {
 
         //Recycler View SETUP
         recyclerView = findViewById(R.id.recipe_listRecyclerView);
-        layoutManager = new LinearLayoutManager(this);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-        setupRecyclerView();
+        setupRecyclerView(specifications.ANY);
 
         //make the spinner
-        //spinnerSetup();
+        spinnerSetup();
     }
 
 
     //TODO: need a method to pull in data from online
 
 
-    public void setupRecyclerView() {
+    public void setupRecyclerView(specifications s) {
         ArrayList<Item> itemListings = dbHelper.fetchItemListings();
+        CustomComparator comparator = new CustomComparator(s);
+        Collections.sort(itemListings, comparator);
         MainRecyclerAdapter adapter = new MainRecyclerAdapter(itemListings);
         recyclerView.setAdapter(adapter);
     }
@@ -128,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
         Spinner spinner = findViewById(R.id.sort_by_spinner);
         // Create an ArrayAdapter using the string array and a default spinner layout
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.cuisine_array, android.R.layout.simple_spinner_item);
+                R.array.sort_by_array, android.R.layout.simple_spinner_item);
         // Specify the layout to use when the list of choices appears
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the adapter to the spinner
@@ -140,37 +137,19 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> arg0, View arg1,
                                        int pos, long id) {
-                if (pos == 0) {
-                    Toast.makeText(arg1.getContext(), "Any Selected", Toast.LENGTH_SHORT).show();
-//                    chooseAllRecipes();
-
-                } else if (pos == 1) {
-                    Toast.makeText(arg1.getContext(), "Chinese Selected", Toast.LENGTH_SHORT).show();
-
-
-                    //NOT SURE IF THeSE 3 LINES IS NECESSARY, maybe delete?
-                    recyclerView = findViewById(R.id.recipe_listRecyclerView);
-                    layoutManager = new LinearLayoutManager(arg1.getContext());
-                    recyclerView.setLayoutManager(layoutManager);
-
-                    //chooseCuisine(specifications.CHINESE);
-
-
-                } else if (pos == 2) {
-                    Toast.makeText(arg1.getContext(), "Italian Selected", Toast.LENGTH_SHORT).show();
-                    //chooseCuisine(specifications.ITALIAN);
-                } else if (pos == 3) {
-                    Toast.makeText(arg1.getContext(), "American Selected", Toast.LENGTH_SHORT).show();
-                    //chooseCuisine(specifications.AMERICAN);
-                } else if (pos == 4) {
-                    Toast.makeText(arg1.getContext(), "Korean Selected", Toast.LENGTH_SHORT).show();
-                    //chooseCuisine(specifications.KOREAN);
-                } else if (pos == 5) {
-                    Toast.makeText(arg1.getContext(), "Japanese Selected", Toast.LENGTH_SHORT).show();
-                    //chooseCuisine(specifications.JAPANESE);
-                } else if (pos == 6) {
-                    Toast.makeText(arg1.getContext(), "Mexican Selected", Toast.LENGTH_SHORT).show();
-                    //chooseCuisine(specifications.MEXICAN);
+                switch(pos) {
+                    case 0:
+                        setupRecyclerView(specifications.ANY);
+                        break;
+                    case 1:
+                        setupRecyclerView(specifications.ALPHABETICAL);
+                        break;
+                    case 2:
+                        setupRecyclerView(specifications.PRICE);
+                        break;
+                    case 3:
+                        setupRecyclerView(specifications.QUANTITY);
+                        break;
                 }
 
                 // An item was selected. You can retrieve the selected item using
@@ -200,6 +179,34 @@ public class MainActivity extends AppCompatActivity {
             // or other notification behaviors after this
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
+        }
+    }
+
+    //custom comparator class
+    private class CustomComparator implements Comparator<Item> {
+
+        private specifications comparisonMethod;
+
+        public CustomComparator(specifications s) {
+            comparisonMethod = s;
+        }
+
+        public int compare(Item a, Item b) {
+            switch(comparisonMethod) {
+                case ANY:
+                    return 1;
+                case PRICE:
+                    //descending order, high price to low price hence b - a
+                    return (int) (b.getPrice() * 100 - a.getPrice() * 100);
+                case ALPHABETICAL:
+                    //ascending order, low string value to high hence a - b
+                    return a.getName().compareTo(b.getName());
+                case QUANTITY:
+                    //descending order, high quantity to low quantity hence b - a
+                    return b.getQuantity() - a.getQuantity();
+                default:
+                    return 1;
+            }
         }
     }
 

@@ -55,6 +55,8 @@ public class DbHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    //TODO: for online mode, only pull data if it's been at least 5 minutes since last pull that way user can't spam the database a ton
+
     //fetches all sales data going "x" days back
     ArrayList<Parcelable> fetchSalesData(int x, String month) {
         SQLiteDatabase db = getReadableDatabase();

@@ -28,8 +28,7 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <activity android:name="com.charles.cartpartners_v1.MainActivity"></activity>
-        <activity android:name="com.charles.cartpartners_v1.RecipeActivity"></activity>
+        <activity android:name="com.charles.cartpartners_v1.MainActivity" />
         <activity android:name="com.charles.cartpartners_v1.SignInActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -37,7 +36,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="com.charles.cartpartners_v1.MetricsView"></activity>
+        <activity android:name="com.charles.cartpartners_v1.MetricsView" />
 
         <activity
             android:name="com.charles.cartpartners_v1.SettingsActivity"
@@ -50,13 +49,9 @@
 
 
         </activity>
-        
-        
-        <service
-            android:name="com.charles.cartpartners_v1.BackgroundService"
-            android:exported="false"
-            android:permission="android.permission.BIND_JOB_SERVICE"
-            />
+
+        <receiver android:name="com.charles.cartpartners_v1.BackgroundService">
+        </receiver>
 
     </application>
 

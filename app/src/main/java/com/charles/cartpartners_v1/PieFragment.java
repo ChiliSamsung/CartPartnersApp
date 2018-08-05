@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.charles.cookingapp.R;
+import com.github.mikephil.charting.charts.Chart;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.Legend;
@@ -66,7 +67,7 @@ public class PieFragment extends Fragment {
             i++;
         }
 
-        PieDataSet pieDataSet = new PieDataSet(data, "Total Sales by Item Type");
+        PieDataSet pieDataSet = new PieDataSet(data, "");
         pieDataSet.setSliceSpace(2);
         pieDataSet.setValueTextSize(12);
         pieDataSet.setValueTextColor(Color.WHITE);
@@ -85,7 +86,15 @@ public class PieFragment extends Fragment {
         //built - in legend
         Legend legend = chart.getLegend();
         legend.setForm(Legend.LegendForm.CIRCLE);
-        legend.setPosition(Legend.LegendPosition.LEFT_OF_CHART);
+        //legend.setPosition(Legend.LegendPosition.LEFT_OF_CHART);
+        legend.setVerticalAlignment(Legend.LegendVerticalAlignment.TOP);
+        legend.setHorizontalAlignment(Legend.LegendHorizontalAlignment.LEFT);
+        legend.setOrientation(Legend.LegendOrientation.VERTICAL);
+        legend.setWordWrapEnabled(true);
+
+
+
+
         legend.setTextColor(Color.DKGRAY);
 
         PieData pieData = new PieData(pieDataSet);
@@ -94,16 +103,18 @@ public class PieFragment extends Fragment {
         //add extra "From and To" date text in top right
         String endDate = bundledItems.get(0).getDate();
         String startDate = bundledItems.get(bundledItems.size() - 1).getDate();
-        String descriptionText = "(Dollars)";
+        String descriptionText = "Total Sales by Item Type ($)";
 
         Description d = new Description();
         d.setText(descriptionText);
         d.setTextSize(12);
+        //d.setTextAlign(Paint.Align.LEFT);
         chart.setDescription(d);
 
         chart.setCenterText(startDate + " to \n" + endDate);
         chart.setTransparentCircleRadius(45);
         chart.setHoleRadius(35);
+        chart.getPaint(Chart.PAINT_CENTER_TEXT);
         chart.invalidate();
 
         return rootView;

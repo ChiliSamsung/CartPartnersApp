@@ -1,10 +1,8 @@
 package com.charles.cartpartners_v1;
 
 import android.annotation.TargetApi;
+import android.app.AlarmManager;
 import android.app.PendingIntent;
-import android.app.job.JobInfo;
-import android.app.job.JobScheduler;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -14,6 +12,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
@@ -29,8 +28,6 @@ import android.widget.Toast;
 
 import com.charles.cookingapp.R;
 import java.util.List;
-
-import static android.app.Notification.VISIBILITY_PRIVATE;
 
 /**
  * A {@link PreferenceActivity} that presents a set of application settings. On
@@ -167,43 +164,9 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
      */
     protected boolean isValidFragment(String fragmentName) {
         return PreferenceFragment.class.getName().equals(fragmentName)
-                || GeneralPreferenceFragment.class.getName().equals(fragmentName)
                 || DataSyncPreferenceFragment.class.getName().equals(fragmentName)
                 || NotificationPreferenceFragment.class.getName().equals(fragmentName)
                 || AccountPreferenceFragment.class.getName().equals(fragmentName);
-    }
-
-    /**
-     * This fragment shows general preferences only. It is used when the
-     * activity is showing a two-pane settings UI.
-     */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public static class GeneralPreferenceFragment extends PreferenceFragment {
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            addPreferencesFromResource(R.xml.pref_general);
-            setHasOptionsMenu(true);
-
-            // Bind the summaries of EditText/List/Dialog/Ringtone preferences
-            // to their values. When their values change, their summaries are
-            // updated to reflect the new value, per the Android Design
-            // guidelines.
-            //its only for strings, gets them to update once they are changed by user
-            bindPreferenceSummaryToValue(findPreference("example_text"));
-            bindPreferenceSummaryToValue(findPreference("example_list"));
-        }
-
-        @Override
-        public boolean onOptionsItemSelected(MenuItem item) {
-            int id = item.getItemId();
-            if (id == android.R.id.home) {
-
-                startActivity(new Intent(getActivity(), SettingsActivity.class));
-                return true;
-            }
-            return super.onOptionsItemSelected(item);
-        }
     }
 
     /**
@@ -232,7 +195,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                             .setContentTitle("You Have Made a Sale!")
                             .setContentText("$5.99")
                             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                            .setVisibility(VISIBILITY_PRIVATE)
                             // Set the intent that will fire when the user taps the notification
                             .setContentIntent(pendingIntent)
                             .setAutoCancel(true); //remove notification when user taps it
@@ -285,31 +247,36 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             bindPreferenceSummaryToValue(findPreference("sync_frequency"));
 
             ListPreference syncFrequencies = (ListPreference) findPreference("sync_frequency");
+
+
             syncFrequencies.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object o) {
                     String newValue = (String) o;
                     if (newValue.equals("-1")) {
-                        JobScheduler scheduler = preference.getContext().getSystemService(JobScheduler.class);
-                        scheduler.cancel(1234);  //see SignInActivity, this is the ID used for the BackgroundService job
+                        AlarmManager alarmManger = (AlarmManager) preference.getContext().getSystemService(Context.ALARM_SERVICE);
+
+                        Intent intent = new Intent(preference.getContext(), BackgroundService.class);
+                        PendingIntent pendingIntent = PendingIntent.getBroadcast(preference.getContext(), 1234, intent,PendingIntent.FLAG_CANCEL_CURRENT);
+
+                        //using the same requestCode of 1234 allows us to cancel it
+                        alarmManger.cancel(pendingIntent);
+
                         Toast.makeText(preference.getContext(), "Background Process Terminated", Toast.LENGTH_SHORT).show();
+
                     } else {
-                        //cancel the old job first
-                        JobScheduler scheduler = preference.getContext().getSystemService(JobScheduler.class);
-                        scheduler.cancel(1234);  //see SignInActivity, this is the ID used for the BackgroundService job
 
-                        //schedule the new job with new interval
-                        ComponentName backgroundService = new ComponentName(preference.getContext(), BackgroundService.class);
-                        int jobID = 1234;
-                        JobInfo.Builder jobBuilder = new JobInfo.Builder(jobID, backgroundService);
-                        jobBuilder.setPersisted(true);
-                        //optional: jobBuilder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_NOT_ROAMING);
                         long intervalDuration = Long.parseLong(newValue);
-                        jobBuilder.setPeriodic(intervalDuration * 60000);
-                        scheduler.schedule(jobBuilder.build());
-                        Toast.makeText(preference.getContext(), "Sync Freq: " + newValue, Toast.LENGTH_SHORT).show();
+                        AlarmManager alarmManger = (AlarmManager) preference.getContext().getSystemService(Context.ALARM_SERVICE);
+                        Intent intent = new Intent(preference.getContext(), BackgroundService.class);
+                        PendingIntent pendingIntent = PendingIntent.getBroadcast(preference.getContext(), 1234, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
-                        System.out.println("Total background processes" + scheduler.getAllPendingJobs().size());
+                        long randomFactor = (long) (Math.random() * 10 * 60000);
+                        alarmManger.setInexactRepeating(AlarmManager.ELAPSED_REALTIME,
+                                SystemClock.elapsedRealtime() + 10,
+                                intervalDuration + randomFactor, pendingIntent);
+
+                        Toast.makeText(preference.getContext(), "Sync Freq: " + newValue, Toast.LENGTH_SHORT).show();
                     }
 
                     /*redirect to go back to Settings page
@@ -355,11 +322,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                     editor.remove("userEmail");
                     editor.putBoolean("userRememberMe", false);
                     editor.apply();
-
-                    //cancel the notifications background process if the user signs out
-                    JobScheduler scheduler = preference.getContext().getSystemService(JobScheduler.class);
-                    scheduler.cancel(1234);  //see SignInActivity, this is the ID used for the BackgroundService job
-                    Toast.makeText(preference.getContext(), "Background Process Terminated", Toast.LENGTH_SHORT).show();
 
                     Intent i = new Intent(preference.getContext(), SignInActivity.class);
                     startActivity(i);

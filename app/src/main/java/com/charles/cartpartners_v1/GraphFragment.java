@@ -83,6 +83,7 @@ public class GraphFragment extends Fragment {
                 Timestamp timestamp = new java.sql.Timestamp(firstDate.getTime());
                 firstTimeStamp = timestamp.getTime();
             } catch (Exception e) {
+                System.out.println("Parsing error occurred");
             }
 
             //gets all the data, subtracts firstTimeStamp from each to scale it
@@ -96,6 +97,7 @@ public class GraphFragment extends Fragment {
                     entries.add(new Entry((float) ((timestamp.getTime() - firstTimeStamp)), totalSales));
                     dateLabels.add(bundledItems.get(i).getDate().substring(5, 10));
                 } catch (Exception e) {
+                    System.out.println("Parsing error occurred");
                 }
             }
 

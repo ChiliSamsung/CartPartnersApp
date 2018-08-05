@@ -1,0 +1,35 @@
+table_wood
+Wood Table
+84.99
+21
+furniture
+
+table_glass
+Glass Table
+120.99
+30
+furniture
+
+table_metal
+Metal Table
+99.99
+11
+furniture
+
+hat_red
+Red Hat
+12.99
+8
+clothing
+
+hat_blue
+Blue Hat
+12.99
+10
+clothing
+
+hat_green
+Green Hat
+13.99
+2
+clothing

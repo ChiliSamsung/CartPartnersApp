@@ -6,10 +6,6 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.res.Resources;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputFilter;
 import android.text.Spanned;
@@ -27,9 +23,11 @@ import android.widget.Toast;
 
 import com.charles.cookingapp.R;
 
-import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -56,12 +54,18 @@ public class MainRecyclerAdapter extends RecyclerView.Adapter<MainRecyclerAdapte
         //get the information stored in the arraylists, then make this element look nice
         final String name = itemListings.get(position).getName();
         holder.name.setText(name);
+
         final String type = itemListings.get(position).getType();
         final String quantity = "" + itemListings.get(position).getQuantity();
         final String result = type + " | Qty: " + quantity;
         holder.cuisine.setText(result);
+
         final String dollar = "" + itemListings.get(position).getPrice();
         holder.dollars.setText(dollar);
+
+        holder.imageView.setImageResource(R.drawable.stock_photo);
+
+
 
         //TODO: BELOW: these need to be added back in later
         /*
@@ -87,7 +91,6 @@ public class MainRecyclerAdapter extends RecyclerView.Adapter<MainRecyclerAdapte
             @Override
             public void onClick(View v) {
 
-                Intent i = new Intent(v.getContext(), RecipeActivity.class);
                 //stores all the necessary data in the intent
                 i.putExtra("Name", name);
                 i.putExtra("Description", description);
@@ -102,8 +105,6 @@ public class MainRecyclerAdapter extends RecyclerView.Adapter<MainRecyclerAdapte
             @SuppressLint("ClickableViewAccessibility")
             @Override
             public void onClick(View v) {
-                Toast.makeText(v.getContext(), "Sale Button", Toast.LENGTH_SHORT).show();
-
                 //prompt for input on the new sale price, as well as the sale duration, then press ok or cancel button
                 AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(v.getContext());
                 LayoutInflater inflater = LayoutInflater.from(v.getContext());
@@ -146,8 +147,7 @@ public class MainRecyclerAdapter extends RecyclerView.Adapter<MainRecyclerAdapte
 
                         //since a "click" is an ACTION_DOWN followed by an ACTION_UP
                         if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-                            DatePickerDialog datePicker = new DatePickerDialog(view.getContext(), R.style.AlertDialogTheme);
-                            datePicker.setOnDateSetListener(new DatePickerDialog.OnDateSetListener() {
+                            DatePickerDialog.OnDateSetListener listener = new DatePickerDialog.OnDateSetListener() {
                                 @Override
                                 public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
                                     startDate[2] = i;
@@ -160,15 +160,22 @@ public class MainRecyclerAdapter extends RecyclerView.Adapter<MainRecyclerAdapte
                                         public void onTimeSet(TimePicker timePicker, int i, int i1) {
                                             startDate[3] = i;
                                             startDate[4] = i1;
-                                            Timestamp startTimeStamp = new Timestamp(startDate[2] - 1900, startDate[0], startDate[1], startDate[3], startDate[4], 0, 0);
+
+                                            Calendar cal = Calendar.getInstance();
+                                            cal.set(startDate[2], startDate[0], startDate[1], startDate[3], startDate[4]);
+                                            Date startTime = cal.getTime();
 
                                             Calendar calendar = Calendar.getInstance();
-                                            Timestamp currTimestamp = new Timestamp(calendar.getTime().getTime());
+                                            Date currTime = calendar.getTime();
+
                                             //do not let the user input a time range that is before current time
-                                            if (startTimeStamp.before(currTimestamp)) {
+                                            if (startTime.before(currTime)) {
                                                 Toast.makeText(timePicker.getContext(), "Error: Start Time Before Current Time", Toast.LENGTH_SHORT).show();
                                             } else {
-                                                saleStart.setText(startTimeStamp.toString().substring(0, 16));
+                                                Date dt = new Date(startTime.getTime());
+                                                SimpleDateFormat sdf = new SimpleDateFormat("E MMM dd, hh:mm aa", Locale.US);
+                                                String startTimeString = sdf.format(dt);
+                                                saleStart.setText(startTimeString);
                                                 startTimeEntered[0] = true;
                                             }
                                         }
@@ -177,8 +184,14 @@ public class MainRecyclerAdapter extends RecyclerView.Adapter<MainRecyclerAdapte
                                     TimePickerDialog timePicker = new TimePickerDialog(datePicker.getContext(), listener, 12, 0, false);
                                     timePicker.show();
                                 }
-                            });
+                            };
 
+
+                            int year = Calendar.getInstance().get((Calendar.YEAR));
+                            int month = Calendar.getInstance().get((Calendar.MONTH));
+                            int day = Calendar.getInstance().get((Calendar.DAY_OF_MONTH));
+
+                            DatePickerDialog datePicker = new DatePickerDialog(view.getContext(), R.style.AlertDialogTheme, listener, year, month, day);
                             datePicker.show();
                         }
 
@@ -208,8 +221,7 @@ public class MainRecyclerAdapter extends RecyclerView.Adapter<MainRecyclerAdapte
 
                         //since a "click" is an ACTION_DOWN followed by an ACTION_UP
                         if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-                            DatePickerDialog datePicker = new DatePickerDialog(view.getContext(), R.style.AlertDialogTheme);
-                            datePicker.setOnDateSetListener(new DatePickerDialog.OnDateSetListener() {
+                            DatePickerDialog.OnDateSetListener listener = new DatePickerDialog.OnDateSetListener() {
                                 @Override
                                 public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
                                     endDate[2] = i;
@@ -223,14 +235,19 @@ public class MainRecyclerAdapter extends RecyclerView.Adapter<MainRecyclerAdapte
                                             endDate[3] = i;
                                             endDate[4] = i1;
 
-                                            //the date array goes month, day, year, then hour, minute (hour is in 24-hour time)
-                                            Timestamp endTimeStamp = new Timestamp(endDate[2] - 1900, endDate[0], endDate[1], endDate[3], endDate[4], 0, 0);
-                                            Timestamp startTimeStamp = new Timestamp(startDate[2] - 1900, startDate[0], startDate[1], startDate[3], startDate[4], 0, 0);
-                                            //do not let the user input a time range that is before current time
-                                            if (endTimeStamp.before(startTimeStamp)) {
+                                            Calendar cal = Calendar.getInstance();
+                                            cal.set(endDate[2], endDate[0], endDate[1], endDate[3], endDate[4]);
+                                            Date endTime = cal.getTime();
+                                            cal.set(startDate[2], startDate[0], startDate[1], startDate[3], startDate[4]);
+                                            Date startTime = cal.getTime();
+
+                                            if (endTime.before(startTime)) {
                                                 Toast.makeText(timePicker.getContext(), "Error: End Time Before Start Time", Toast.LENGTH_SHORT).show();
                                             } else {
-                                                saleEnd.setText(endTimeStamp.toString().substring(0, 16));
+                                                Date dt = new Date(endTime.getTime());
+                                                SimpleDateFormat sdf = new SimpleDateFormat("E MMM dd, hh:mm aa", Locale.US);
+                                                String endTimeString = sdf.format(dt);
+                                                saleEnd.setText(endTimeString);
                                                 endTimeEntered[0] = true;
                                             }
                                         }
@@ -239,7 +256,13 @@ public class MainRecyclerAdapter extends RecyclerView.Adapter<MainRecyclerAdapte
                                     TimePickerDialog timePicker = new TimePickerDialog(datePicker.getContext(), listener, 12, 0, false);
                                     timePicker.show();
                                 }
-                            });
+                            };
+
+                            int year = Calendar.getInstance().get((Calendar.YEAR));
+                            int month = Calendar.getInstance().get((Calendar.MONTH));
+                            int day = Calendar.getInstance().get((Calendar.DAY_OF_MONTH));
+
+                            DatePickerDialog datePicker = new DatePickerDialog(view.getContext(), R.style.AlertDialogTheme, listener, year, month, day);
 
                             datePicker.show();
                         }

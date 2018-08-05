@@ -14,33 +14,29 @@
 
     <ImageView
         android:id="@+id/item_picture"
-
         android:layout_width="150dp"
         android:layout_height="150dp"
         android:scaleType="fitXY"
         android:adjustViewBounds="true"
-        android:background="@color/colorAccent"
-        android:padding = "5dp"
+        android:background="@color/colorPrimary"
+        android:padding = "7dp"
         android:layout_alignParentEnd="true"
         android:contentDescription="@string/ItemImageView"
+
         />
 
     <TextView
         android:id="@+id/item_name"
-
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingStart="5dp"
         android:paddingEnd="150dp"
-
         android:layout_alignStart="@id/item_picture"
         android:layout_alignParentStart="true"
-
         />
 
     <TextView
         android:id="@+id/recipe_cuisine"
-
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/item_name"
@@ -48,25 +44,25 @@
         android:paddingStart="5dp"
         android:paddingEnd="170dp"
         android:layout_alignParentStart="true"
-
-
         />
 
     <TextView
         android:id="@+id/recipe_short_description"
-
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:layout_alignStart="@+id/item_picture"
         android:layout_below = "@+id/recipe_cuisine"
-
         android:paddingStart="5dp"
-        android:paddingEnd="150dp"
-        android:paddingBottom="10dp"
-
+        android:paddingEnd="100dp"
         android:layout_alignParentStart="true"
+        android:text="Description Text"
+        />
 
-
+    <TextView
+        android:id = "@+id/spacer3"
+        android:layout_width="5dp"
+        android:layout_height="40dp"
+        android:layout_below="@+id/recipe_short_description"
         />
 
     <ImageButton
@@ -76,18 +72,17 @@
         android:scaleType="fitXY"
         android:src = "@drawable/delete"
         android:layout_below="@+id/recipe_short_description"
+        android:layout_toEndOf="@+id/spacer3"
         android:background="@color/colorAccent"
         android:contentDescription="@string/ItemImageView"
-
         />
 
     <TextView
         android:id = "@+id/spacer1"
-        android:layout_width="10dp"
+        android:layout_width="5dp"
         android:layout_height="40dp"
         android:layout_below="@+id/recipe_short_description"
         android:layout_toEndOf="@+id/delete_button"
-
         />
 
     <ImageButton
@@ -100,23 +95,27 @@
         android:layout_toEndOf="@+id/spacer1"
         android:background="@color/colorAccent"
         android:contentDescription="@string/ItemImageView"
+        />
 
+    <TextView
+        android:id = "@+id/spacer4"
+        android:layout_width="5dp"
+        android:layout_height="40dp"
+        android:layout_below="@+id/recipe_short_description"
+        android:layout_toEndOf="@+id/sale_button"
         />
 
     <TextView
         android:id="@+id/item_price"
-
         android:layout_width="100dp"
-        android:layout_height="wrap_content"
+        android:layout_height="40dp"
         android:layout_below="@+id/recipe_short_description"
-        android:layout_toEndOf="@+id/sale_button"
+        android:layout_toEndOf="@+id/spacer4"
         android:textStyle="bold"
         android:textSize="15sp"
-
         android:paddingTop="10dp"
         android:paddingStart="2dp"
         android:paddingEnd="2dp"
-
         />
 
 </RelativeLayout>
